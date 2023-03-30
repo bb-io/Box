@@ -122,6 +122,28 @@ namespace Apps.Box
             client.FoldersManager.DeleteAsync(input.FolderId).Wait();
         }
 
+        [Action("Add collaborator to folder", Description = "Add collaborator to folder")]
+        public void AddCollaboratorToFolder(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+           [ActionParameter] AddFolderCollaboratorRequest input)
+        {
+            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var addCollaboratorRequest = new BoxCollaborationRequest
+            {
+                AccessibleBy = new BoxCollaborationUserRequest()
+                {
+                    Id = input.CollaboratorId,
+                    Type = BoxType.user
+                },
+                Item = new BoxRequestEntity()
+                {
+                    Id = input.FolderId,
+                    Type = BoxType.folder
+                },
+                Role = input.Role,
+            };
+            client.CollaborationsManager.AddCollaborationAsync(addCollaboratorRequest).Wait();
+        }
+
         private BoxClient GetBoxClient(string clientId, string clientSecret, string devToken)
         {
             var config = new BoxConfigBuilder(clientId, clientSecret, new Uri("http://localhost")).Build();
