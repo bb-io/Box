@@ -1,0 +1,20 @@
+{
+  "definition": [
+    {
+      "name": "clientId",
+      "description": "Your Box client Id"
+    },
+    {
+      "name": "clientSecret",
+      "description": "Your Box client secret"
+    },
+    {
+      "name": "devToken",
+      "description": "Your Box developer token"
+    }
+  ],
+  "communicationWrapperType": "HttpWrapper",
+  "authenticationType": null,
+  "authenticationDefition": null,
+  "authenticationResponseMapping": null
+}
