@@ -7,6 +7,7 @@ using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2;
 using Box.V2.Models;
+using Blackbird.Applications.Sdk.Common.Actions;
 
 namespace Apps.Box
 {
@@ -14,10 +15,14 @@ namespace Apps.Box
     public class Actions
     {
         [Action("List directory", Description = "List specified directory")]
-        public ListDirectoryResponse ListDirectory(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public ListDirectoryResponse ListDirectory(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] ListDirectoryRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var items = client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit).Result.Entries;
             var folderItems = items.Select(i => new DirectoryItemDto()
             {
@@ -30,10 +35,14 @@ namespace Apps.Box
         }
 
         [Action("Get file information", Description = "Get file information")]
-        public GetFileInformationResponse GetFileInformation(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public GetFileInformationResponse GetFileInformation(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] GetFileInformationRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var fileInfo = client.FilesManager.GetInformationAsync(input.FileId).Result;
             return new GetFileInformationResponse()
             {
@@ -43,10 +52,14 @@ namespace Apps.Box
         }
 
         [Action("Rename file", Description = "Rename file")]
-        public void RenameFile(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void RenameFile(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] RenameFileRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var fileUpdateRequest = new BoxFileRequest()
             {
                 Id = input.FileId,
@@ -56,10 +69,14 @@ namespace Apps.Box
         }
 
         [Action("Download file", Description = "Download file by id")]
-        public DownloadFileResponse DownloadFile(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public DownloadFileResponse DownloadFile(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] DownloadFileRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var fileStream = client.FilesManager.DownloadAsync(input.FileId).Result;
             using(var memStream = new MemoryStream())
             {
@@ -72,10 +89,14 @@ namespace Apps.Box
         }
 
         [Action("Upload file", Description = "Upload file")]
-        public void UploadFile(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void UploadFile(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] UploadFileRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var uploadFileRequest = new BoxFileRequest()
             {
                 Name = input.FileName,
@@ -91,18 +112,26 @@ namespace Apps.Box
         }
 
         [Action("Delete file", Description = "Delete file by id")]
-        public void DeleteFile(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void DeleteFile(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] DeleteFileRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             client.FilesManager.DeleteAsync(input.FileId).Wait();
         }
 
         [Action("Create folder", Description = "Create folder")]
-        public void CreateDirectory(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void CreateDirectory(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] CreateFolderRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var folderRequest = new BoxFolderRequest()
             {
                 Name = input.FolderName,
@@ -115,18 +144,26 @@ namespace Apps.Box
         }
 
         [Action("Delete directory", Description = "Delete directory")]
-        public void DeleteDirectory(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void DeleteDirectory(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] DeleteDirectoryRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             client.FoldersManager.DeleteAsync(input.FolderId).Wait();
         }
 
         [Action("Add collaborator to folder", Description = "Add collaborator to folder")]
-        public void AddCollaboratorToFolder(string clientId, string clientSecret, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void AddCollaboratorToFolder(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
            [ActionParameter] AddFolderCollaboratorRequest input)
         {
-            var client = GetBoxClient(clientId, clientSecret, authenticationCredentialsProvider.Value);
+            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken");
+            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId");
+            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret");
+
+            var client = GetBoxClient(clientId.Value, clientSecret.Value, devToken.Value);
             var addCollaboratorRequest = new BoxCollaborationRequest
             {
                 AccessibleBy = new BoxCollaborationUserRequest()
