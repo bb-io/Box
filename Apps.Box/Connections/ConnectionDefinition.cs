@@ -1,10 +1,5 @@
 ﻿using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Connections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apps.Box.Connections
 {
@@ -12,21 +7,22 @@ namespace Apps.Box.Connections
     {
         public IEnumerable<ConnectionPropertyGroup> ConnectionPropertyGroups => new List<ConnectionPropertyGroup>()
         {
-            new ConnectionPropertyGroup
+            new()
             {
                 Name = "Developer API token",
                 AuthenticationType = ConnectionAuthenticationType.Undefined,
                 ConnectionUsage = ConnectionUsage.Actions,
                 ConnectionProperties = new List<ConnectionProperty>()
                 {
-                    new ConnectionProperty("clientId"),
-                    new ConnectionProperty("clientSecret"),
-                    new ConnectionProperty("devToken")
+                    new("clientId") { DisplayName = "Client ID" },
+                    new("clientSecret") { DisplayName = "Client secret" },
+                    new("devToken") { DisplayName = "API token" }
                 }
             }
         };
 
-        public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(Dictionary<string, string> values)
+        public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(
+            Dictionary<string, string> values)
         {
             var devToken = values.First(v => v.Key == "devToken");
             yield return new AuthenticationCredentialsProvider(

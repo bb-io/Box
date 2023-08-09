@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Apps.Box.DataSourceHandlers.EnumHandlers;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Box.Models.Requests
 {
@@ -12,6 +9,10 @@ namespace Apps.Box.Models.Requests
 
         public string FolderId { get; set; }
 
-        public string Role { get; set; }  //editor, viewer, previewer, uploader, previewer uploader, viewer uploader, co-owner,  owner
+        [DataSource(typeof(RoleDataHandler))]
+        public string Role { get; set; }
+        
+        [DataSource(typeof(StatusDataHander))]
+        public string? Status { get; set; }
     }
 }

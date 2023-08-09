@@ -3,9 +3,6 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Apps.Box.Models.Requests;
 using Apps.Box.Models.Responses;
 using Apps.Box.Dtos;
-using Box.V2.Auth;
-using Box.V2.Config;
-using Box.V2;
 using Box.V2.Models;
 using Blackbird.Applications.Sdk.Common.Actions;
 
@@ -142,6 +139,7 @@ namespace Apps.Box
                     Type = BoxType.folder
                 },
                 Role = input.Role,
+                Status = input.Status
             };
             client.CollaborationsManager.AddCollaborationAsync(addCollaboratorRequest).Wait();
         }
