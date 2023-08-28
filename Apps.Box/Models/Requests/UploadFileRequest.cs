@@ -1,10 +1,10 @@
-﻿namespace Apps.Box.Models.Requests
+﻿using File = Blackbird.Applications.Sdk.Common.Files.File;
+
+namespace Apps.Box.Models.Requests
 {
     public class UploadFileRequest
     {
-        public byte[] File { get; set; }
-
-        public string FileName { get; set; }
+        public File File { get; set; }
 
         public string ParentFolderId { get; set; }
     }

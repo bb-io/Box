@@ -1,7 +1,9 @@
-﻿namespace Apps.Box.Models.Responses
+﻿using File = Blackbird.Applications.Sdk.Common.Files.File;
+
+namespace Apps.Box.Models.Responses
 {
     public class DownloadFileResponse
     {
-        public byte[] File { get; set; }
+        public File File { get; set; }
     }
 }

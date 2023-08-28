@@ -5,6 +5,8 @@ using Apps.Box.Models.Responses;
 using Apps.Box.Dtos;
 using Box.V2.Models;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Utils.Extensions.Files;
+using File = Blackbird.Applications.Sdk.Common.Files.File;
 
 namespace Apps.Box
 {
@@ -33,7 +35,7 @@ namespace Apps.Box
         {
             var client = new BlackbirdBoxClient(authenticationCredentialsProviders);
             var fileInfo = await client.FilesManager.GetInformationAsync(input.FileId);
-
+            
             return new GetFileInformationResponse()
             {
                 Path = string.Join('/', fileInfo.PathCollection.Entries.Select(p => p.Name)),
@@ -60,14 +62,21 @@ namespace Apps.Box
         {
             var client = new BlackbirdBoxClient(authenticationCredentialsProviders);
             var fileStream = await client.FilesManager.DownloadAsync(input.FileId);
-            using(var memStream = new MemoryStream())
+            var fileInfo = await client.FilesManager.GetInformationAsync(input.FileId);
+            var bytes = await fileStream.GetByteData();
+            var filename = fileInfo.Name;
+            
+            if (!MimeTypes.TryGetMimeType(filename, out var contentType))
+                contentType = "application/octet-stream";
+            
+            return new DownloadFileResponse
             {
-                fileStream.CopyTo(memStream);
-                return new DownloadFileResponse()
+                File = new File(bytes)
                 {
-                    File = memStream.ToArray(),
-                };
-            }
+                    Name = filename,
+                    ContentType = contentType
+                }
+            };
         }
 
         [Action("Upload file", Description = "Upload file")]
@@ -75,15 +84,15 @@ namespace Apps.Box
            [ActionParameter] UploadFileRequest input)
         {
             var client = new BlackbirdBoxClient(authenticationCredentialsProviders);
-            var uploadFileRequest = new BoxFileRequest()
+            var uploadFileRequest = new BoxFileRequest
             {
-                Name = input.FileName,
-                Parent = new BoxRequestEntity()
+                Name = input.File.Name,
+                Parent = new BoxRequestEntity
                 {
                     Id = input.ParentFolderId
                 }
             };
-            using (var stream = new MemoryStream(input.File))
+            using (var stream = new MemoryStream(input.File.Bytes))
             {
                 client.FilesManager.UploadAsync(uploadFileRequest, stream).Wait();
             }    
