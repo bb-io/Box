@@ -9,40 +9,21 @@ namespace Apps.Box.Connections
         {
             new()
             {
-                Name = "Developer API token",
-                AuthenticationType = ConnectionAuthenticationType.Undefined,
+                Name = "OAuth",
+                AuthenticationType = ConnectionAuthenticationType.OAuth2,
                 ConnectionUsage = ConnectionUsage.Actions,
                 ConnectionProperties = new List<ConnectionProperty>()
-                {
-                    new("clientId") { DisplayName = "Client ID" },
-                    new("clientSecret") { DisplayName = "Client secret" },
-                    new("devToken") { DisplayName = "API token" }
-                }
             }
         };
 
         public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(
             Dictionary<string, string> values)
         {
-            var devToken = values.First(v => v.Key == "devToken");
+            var accessToken = values.First(v => v.Key == "access_token");
             yield return new AuthenticationCredentialsProvider(
                 AuthenticationCredentialsRequestLocation.None,
-                devToken.Key,
-                devToken.Value
-            );
-
-            var clientId = values.First(v => v.Key == "clientId");
-            yield return new AuthenticationCredentialsProvider(
-                AuthenticationCredentialsRequestLocation.None,
-                clientId.Key,
-                clientId.Value
-            );
-
-            var clientSecret = values.First(v => v.Key == "clientSecret");
-            yield return new AuthenticationCredentialsProvider(
-                AuthenticationCredentialsRequestLocation.None,
-                clientSecret.Key,
-                clientSecret.Value
+                accessToken.Key,
+                accessToken.Value
             );
         }
     }

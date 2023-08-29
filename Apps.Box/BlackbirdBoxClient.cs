@@ -7,18 +7,18 @@ namespace Apps.Box
 {
     public class BlackbirdBoxClient : BoxClient
     {
-        private static IBoxConfig GetConfig(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
-        {
-            var clientId = authenticationCredentialsProviders.First(p => p.KeyName == "clientId").Value;
-            var clientSecret = authenticationCredentialsProviders.First(p => p.KeyName == "clientSecret").Value;
-            return new BoxConfigBuilder(clientId, clientSecret, new Uri("http://localhost")).Build();
-        }
+        public BlackbirdBoxClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders) 
+            : base(GetConfig(), GetSession(authenticationCredentialsProviders)) { }
+        
+        private static IBoxConfig GetConfig() 
+            => new BoxConfigBuilder(ApplicationConstants.ClientId, ApplicationConstants.ClientSecret, 
+                new Uri(ApplicationConstants.RedirectUri)).Build();
 
-        private static OAuthSession GetSession(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
+        private static OAuthSession GetSession(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
         {
-            var devToken = authenticationCredentialsProviders.First(p => p.KeyName == "devToken").Value;
-            return new OAuthSession(devToken, "N/A", 3600, "bearer");
+            var accessToken = authenticationCredentialsProviders.First(p => p.KeyName == "access_token").Value;
+            return new OAuthSession(accessToken, "N/A", 3600, "bearer");
         }
-        public BlackbirdBoxClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders) : base(GetConfig(authenticationCredentialsProviders), GetSession(authenticationCredentialsProviders)) { }
     }
 }

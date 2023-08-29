@@ -1,16 +1,8 @@
 {
   "definition": [
     {
-      "name": "clientId",
-      "description": "Your Box client Id"
-    },
-    {
-      "name": "clientSecret",
-      "description": "Your Box client secret"
-    },
-    {
-      "name": "devToken",
-      "description": "Your Box developer token"
+      "name": "access_token",
+      "description": "Bearer token for authorization"
     }
   ],
   "communicationWrapperType": "HttpWrapper",
