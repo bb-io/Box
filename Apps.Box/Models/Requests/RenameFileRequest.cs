@@ -1,9 +1,16 @@
-﻿namespace Apps.Box.Models.Requests
+﻿using Apps.Box.DataSourceHandlers;
+using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dynamic;
+
+namespace Apps.Box.Models.Requests
 {
     public class RenameFileRequest
     {
+        [DataSource(typeof(FileDataSourceHandler))]
+        [Display("File")]
         public string FileId { get; set; }
 
+        [Display("New filename")]
         public string NewFilename { get; set; }
     }
 }
