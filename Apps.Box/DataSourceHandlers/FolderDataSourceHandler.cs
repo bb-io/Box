@@ -7,6 +7,7 @@ namespace Apps.Box.DataSourceHandlers;
 
 public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
 {
+    private const string RootFolderName = "All files (root folder)";
     private readonly BlackbirdBoxClient _client;
     
     public FolderDataSourceHandler(InvocationContext invocationContext) : base(invocationContext)
@@ -22,7 +23,7 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
         if (string.IsNullOrWhiteSpace(context.SearchString))
         {
             await GetTwentyFolders(folders);
-            folders["0"] = "/";
+            folders["0"] = RootFolderName;
         }
         else
             folders = await SearchFolders(context.SearchString);
@@ -37,19 +38,24 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
             var pathFolders = folder.PathCollection.Entries.Skip(1).ToArray();
             
             if (pathFolders.Length == 0)
-                return "/" + folder.Name;
+                return folder.Name;
 
             if (pathFolders.Length <= 2)
-                return "/" + string.Join("/", pathFolders.Select(p => p.Name)) + "/" + folder.Name;
+                return string.Join("/", pathFolders.Select(p => p.Name)) + "/" + folder.Name;
             
-            return "/" + pathFolders[0].Name + "/.../" + pathFolders[^1].Name + "/" + folder.Name;
+            return pathFolders[0].Name + "/.../" + pathFolders[^1].Name + "/" + folder.Name;
         }
         
         var folders = await _client.SearchManager.QueryAsync(searchString, type: "folder", limit: 20, 
             ancestorFolderIds: new[] { "0" }, contentTypes: new[] { "name" , "description" }, 
             fields: new [] { "id", "name", "path_collection" });
 
-        return folders.Entries.ToDictionary(f => f.Id, GetFolderPath);
+        var foldersDictionary = folders.Entries.ToDictionary(f => f.Id, GetFolderPath);
+        
+        if (RootFolderName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            foldersDictionary["0"] = RootFolderName;
+
+        return foldersDictionary;
     }
     
     private async Task GetTwentyFolders(Dictionary<string, string> folders, int offset = 0, string folderId = "0", 
@@ -57,12 +63,15 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
     {
         string GetFolderPath(BoxItem folder)
         {
-            var folderPathParts = folderPath.Split("/").Skip(1).ToArray();
+            var folderPathParts = folderPath.Split("/").ToArray();
 
+            if (folderPathParts.Length == 1 && folderPathParts[0] == "")
+                return folder.Name;
+            
             if (folderPathParts.Length <= 2)
                 return folderPath + "/" + folder.Name;
 
-            return "/" + folderPathParts[0] + "/.../" + folderPathParts[^1] + "/" + folder.Name;
+            return folderPathParts[0] + "/.../" + folderPathParts[^1] + "/" + folder.Name;
         }
         
         const int limit = 20;
@@ -76,8 +85,9 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
 
             if (item.Type == "folder")
             {
-                folders[item.Id] = GetFolderPath(item);
-                await GetTwentyFolders(folders, offset, item.Id, folderPath + "/" + item.Name);
+                var subfolderPath = GetFolderPath(item);
+                folders[item.Id] = subfolderPath;
+                await GetTwentyFolders(folders, offset, item.Id, subfolderPath);
             }
         }
 

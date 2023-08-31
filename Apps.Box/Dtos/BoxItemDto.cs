@@ -6,7 +6,7 @@ public abstract class BoxItemDto
 {
     protected BoxItemDto(BoxItem item)
     {
-        Path = "/" + string.Join('/', item.PathCollection.Entries.Skip(1).Select(p => p.Name));
+        Path = string.Join('/', item.PathCollection.Entries.Select(p => p.Name)) + "/";
         Name = item.Name;
         Size = item.Size;
         Description = item.Description;

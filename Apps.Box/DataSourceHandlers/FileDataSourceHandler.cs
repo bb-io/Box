@@ -34,9 +34,9 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
             var pathFolders = file.PathCollection.Entries.Skip(1).ToArray();
 
             if (pathFolders.Length <= 2)
-                return "/" + string.Join("/", pathFolders.Select(p => p.Name)) + "/" + file.Name;
+                return string.Join("/", pathFolders.Select(p => p.Name)) + "/" + file.Name;
             
-            return "/" + pathFolders[0].Name + "/.../" + pathFolders[^1].Name + "/" + file.Name;
+            return pathFolders[0].Name + "/.../" + pathFolders[^1].Name + "/" + file.Name;
         }
         
         var files = await _client.SearchManager.QueryAsync(searchString, type: "file", limit: 20, ancestorFolderIds: new[] { "0" }, 
@@ -50,12 +50,15 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
     {
         string GetFilePath(BoxItem file)
         {
-            var folderPathParts = folderPath.Split("/").Skip(1).ToArray();
+            var folderPathParts = folderPath.Split("/").ToArray();
+            
+            if (folderPathParts.Length == 1 && folderPathParts[0] == "")
+                return file.Name;
 
             if (folderPathParts.Length <= 2)
                 return folderPath + "/" + file.Name;
 
-            return "/" + folderPathParts[0] + "/.../" + folderPathParts[^1] + "/" + file.Name;
+            return folderPathParts[0] + "/.../" + folderPathParts[^1] + "/" + file.Name;
         }
         
         const int limit = 20;
@@ -71,7 +74,10 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
                 files[item.Id] = GetFilePath(item);
                 
             else if (item.Type == "folder")
-                await GetTwentyFiles(files, offset, item.Id, folderPath + "/" + item.Name);
+            {
+                var subfolderPath = folderPath == "" ? item.Name : folderPath + "/" + item.Name;
+                await GetTwentyFiles(files, offset, item.Id, subfolderPath);
+            }
         }
 
         if (items.TotalCount > limit + offset)
