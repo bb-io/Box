@@ -12,7 +12,7 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
     
     public FolderDataSourceHandler(InvocationContext invocationContext) : base(invocationContext)
     {
-        _client = new BlackbirdBoxClient(invocationContext.AuthenticationCredentialsProviders);
+        _client = new BlackbirdBoxClient(invocationContext.AuthenticationCredentialsProviders, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
     }
 
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,

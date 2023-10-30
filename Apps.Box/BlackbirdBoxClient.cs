@@ -7,12 +7,12 @@ namespace Apps.Box
 {
     public class BlackbirdBoxClient : BoxClient
     {
-        public BlackbirdBoxClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders) 
-            : base(GetConfig(), GetSession(authenticationCredentialsProviders)) { }
+        public BlackbirdBoxClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, string redirectUri) 
+            : base(GetConfig(redirectUri), GetSession(authenticationCredentialsProviders)) { }
         
-        private static IBoxConfig GetConfig() 
+        private static IBoxConfig GetConfig(string redirectUri) 
             => new BoxConfigBuilder(ApplicationConstants.ClientId, ApplicationConstants.ClientSecret, 
-                new Uri(ApplicationConstants.RedirectUri)).Build();
+                new Uri(redirectUri)).Build();
 
         private static OAuthSession GetSession(
             IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
