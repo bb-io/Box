@@ -12,24 +12,25 @@ namespace Apps.Box.Connections
         public async ValueTask<ConnectionValidationResponse> ValidateConnection(
        IEnumerable<AuthenticationCredentialsProvider> authProviders, CancellationToken cancellationToken)
         {
-            var client = new BlackbirdBoxClient(authProviders, "");
-            try
+            //var client = new BlackbirdBoxClient(authProviders, "");
+            //try
+            //{
+            //    await client.CollectionsManager.GetCollectionsAsync();
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    return new ConnectionValidationResponse
+            //    {
+            //        IsValid = false,
+            //        Message = ex.Message
+            //    };
+            //}
+            return new ConnectionValidationResponse
             {
-                await client.CollectionsManager.GetCollectionsAsync();
-                return new ConnectionValidationResponse
-                {
-                    IsValid = true,
-                    Message = "Success"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ConnectionValidationResponse
-                {
-                    IsValid = false,
-                    Message = ex.Message
-                };
-            }
+                IsValid = true,
+                Message = "Success"
+            };
         }
     }
 }
