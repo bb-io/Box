@@ -13,7 +13,6 @@
     <PackageReference Include="Blackbird.Applications.SDK.Extensions.FileManagement" Version="1.0.0-alpha2" />
     <PackageReference Include="Blackbird.Applications.Sdk.Utils" Version="1.0.12" />
     <PackageReference Include="Box.V2.Core" Version="5.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="MimeTypes" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
