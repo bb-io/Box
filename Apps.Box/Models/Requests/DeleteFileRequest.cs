@@ -2,12 +2,11 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.Box.Models.Requests
+namespace Apps.Box.Models.Requests;
+
+public class DeleteFileRequest
 {
-    public class DeleteFileRequest
-    {
-        [DataSource(typeof(FileDataSourceHandler))]
-        [Display("File")]
-        public string FileId { get; set; }
-    }
+    [DataSource(typeof(FileDataSourceHandler))]
+    [Display("File")]
+    public string FileId { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using System.Net.Mime;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Apps.Box.Models.Requests;
 using Apps.Box.Models.Responses;
@@ -6,146 +7,145 @@ using Apps.Box.Dtos;
 using Box.V2.Models;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
-using Blackbird.Applications.Sdk.Utils.Extensions.Files;
-using File = Blackbird.Applications.Sdk.Common.Files.File;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 
-namespace Apps.Box
+namespace Apps.Box;
+
+[ActionList]
+public class Actions : BaseInvocable
 {
-    [ActionList]
-    public class Actions : BaseInvocable
+    private IEnumerable<AuthenticationCredentialsProvider> Creds =>
+        InvocationContext.AuthenticationCredentialsProviders;
+
+    private readonly IFileManagementClient _fileManagementClient;
+
+    public Actions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) : base(
+        invocationContext)
     {
-        private IEnumerable<AuthenticationCredentialsProvider> Creds =>
-            InvocationContext.AuthenticationCredentialsProviders;
+        _fileManagementClient = fileManagementClient;
+    }
 
-        public Actions(InvocationContext invocationContext) : base(invocationContext) { }
-        
-        [Action("List directory", Description = "List specified directory")]
-        public async Task<ListDirectoryResponse> ListDirectory([ActionParameter] ListDirectoryRequest input)
+    [Action("List directory", Description = "List specified directory")]
+    public async Task<ListDirectoryResponse> ListDirectory([ActionParameter] ListDirectoryRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit);
+        var folderItems = items.Entries.Select(i => new DirectoryItemDto { Name = i.Name }).ToList();
+
+        return new ListDirectoryResponse
         {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit);
-            var folderItems = items.Entries.Select(i => new DirectoryItemDto { Name = i.Name }).ToList();
-            
-            return new ListDirectoryResponse
+            DirectoriesItems = folderItems
+        };
+    }
+
+    [Action("Get file information", Description = "Get file information")]
+    public async Task<FileDto> GetFileInformation([ActionParameter] GetFileInformationRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var file = await client.FilesManager.GetInformationAsync(input.FileId);
+        return new FileDto(file);
+    }
+
+    [Action("Rename file", Description = "Rename file")]
+    public async Task<FileDto> RenameFile([ActionParameter] RenameFileRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var fileUpdateRequest = new BoxFileRequest
+        {
+            Id = input.FileId,
+            Name = input.NewFilename
+        };
+        var file = await client.FilesManager.UpdateInformationAsync(fileUpdateRequest);
+        return new FileDto(file);
+    }
+
+    [Action("Download file", Description = "Download file")]
+    public async Task<DownloadFileResponse> DownloadFile([ActionParameter] DownloadFileRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var fileStream = await client.FilesManager.DownloadAsync(input.FileId);
+        var fileInfo = await client.FilesManager.GetInformationAsync(input.FileId);
+        var filename = fileInfo.Name;
+
+        if (!MimeTypes.TryGetMimeType(filename, out var contentType))
+            contentType = MediaTypeNames.Application.Octet;
+
+        var file = await _fileManagementClient.UploadAsync(fileStream, contentType, filename);
+
+        return new()
+        {
+            File = file
+        };
+    }
+
+    [Action("Upload file", Description = "Upload file")]
+    public async Task<FileDto> UploadFile([ActionParameter] UploadFileRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var uploadFileRequest = new BoxFileRequest
+        {
+            Name = input.File.Name,
+            Parent = new BoxRequestEntity
             {
-                DirectoriesItems = folderItems
-            };
-        }
+                Id = input.ParentFolderId
+            }
+        };
 
-        [Action("Get file information", Description = "Get file information")]
-        public async Task<FileDto> GetFileInformation([ActionParameter] GetFileInformationRequest input)
-        {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var file = await client.FilesManager.GetInformationAsync(input.FileId);
-            return new FileDto(file);
-        }
+        var fileStream = await _fileManagementClient.DownloadAsync(input.File);
+        var file = await client.FilesManager.UploadAsync(uploadFileRequest, fileStream);
+        return new(file);
+    }
 
-        [Action("Rename file", Description = "Rename file")]
-        public async Task<FileDto> RenameFile([ActionParameter] RenameFileRequest input)
+    [Action("Delete file", Description = "Delete file")]
+    public async Task DeleteFile([ActionParameter] DeleteFileRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        await client.FilesManager.DeleteAsync(input.FileId);
+    }
+
+    [Action("Create folder", Description = "Create folder")]
+    public async Task<FolderDto> CreateDirectory([ActionParameter] CreateFolderRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var folderRequest = new BoxFolderRequest
         {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var fileUpdateRequest = new BoxFileRequest
+            Name = input.FolderName,
+            Parent = new BoxRequestEntity
             {
-                Id = input.FileId,
-                Name = input.NewFilename
-            };
-            var file = await client.FilesManager.UpdateInformationAsync(fileUpdateRequest);
-            return new FileDto(file);
-        }
+                Id = input.ParentFolderId
+            }
+        };
+        var folder = await client.FoldersManager.CreateAsync(folderRequest);
+        return new FolderDto(folder);
+    }
 
-        [Action("Download file", Description = "Download file")]
-        public async Task<DownloadFileResponse> DownloadFile([ActionParameter] DownloadFileRequest input)
+    [Action("Delete directory", Description = "Delete directory")]
+    public async Task DeleteDirectory([ActionParameter] DeleteDirectoryRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        await client.FoldersManager.DeleteAsync(input.FolderId);
+    }
+
+    [Action("Add collaborator to folder", Description = "Add collaborator to folder")]
+    public async Task<CollaborationDto> AddCollaboratorToFolder([ActionParameter] AddFolderCollaboratorRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        var addCollaboratorRequest = new BoxCollaborationRequest
         {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var fileStream = await client.FilesManager.DownloadAsync(input.FileId);
-            var fileInfo = await client.FilesManager.GetInformationAsync(input.FileId);
-            var bytes = await fileStream.GetByteData();
-            var filename = fileInfo.Name;
-            
-            if (!MimeTypes.TryGetMimeType(filename, out var contentType))
-                contentType = "application/octet-stream";
-            
-            return new DownloadFileResponse
+            AccessibleBy = new BoxCollaborationUserRequest
             {
-                File = new File(bytes)
-                {
-                    Name = filename,
-                    ContentType = contentType
-                }
-            };
-        }
-
-        [Action("Upload file", Description = "Upload file")]
-        public async Task<FileDto> UploadFile([ActionParameter] UploadFileRequest input)
-        {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var uploadFileRequest = new BoxFileRequest
+                Login = input.CollaboratorEmail,
+                Type = BoxType.user
+            },
+            Item = new BoxRequestEntity
             {
-                Name = input.File.Name,
-                Parent = new BoxRequestEntity
-                {
-                    Id = input.ParentFolderId
-                }
-            };
-
-            using (var stream = new MemoryStream(input.File.Bytes))
-            {
-                var file = await client.FilesManager.UploadAsync(uploadFileRequest, stream);
-                return new FileDto(file);
-            }    
-        }
-
-        [Action("Delete file", Description = "Delete file")]
-        public async Task DeleteFile([ActionParameter] DeleteFileRequest input)
-        {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            await client.FilesManager.DeleteAsync(input.FileId);
-        }
-
-        [Action("Create folder", Description = "Create folder")]
-        public async Task<FolderDto> CreateDirectory([ActionParameter] CreateFolderRequest input)
-        {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var folderRequest = new BoxFolderRequest
-            {
-                Name = input.FolderName,
-                Parent = new BoxRequestEntity
-                {
-                    Id = input.ParentFolderId
-                }
-            };
-            var folder = await client.FoldersManager.CreateAsync(folderRequest);
-            return new FolderDto(folder);
-        }
-
-        [Action("Delete directory", Description = "Delete directory")]
-        public async Task DeleteDirectory([ActionParameter] DeleteDirectoryRequest input)
-        {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            await client.FoldersManager.DeleteAsync(input.FolderId);
-        }
-
-        [Action("Add collaborator to folder", Description = "Add collaborator to folder")]
-        public async Task<CollaborationDto> AddCollaboratorToFolder([ActionParameter] AddFolderCollaboratorRequest input)
-        {
-            var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-            var addCollaboratorRequest = new BoxCollaborationRequest
-            {
-                AccessibleBy = new BoxCollaborationUserRequest
-                {
-                    Login = input.CollaboratorEmail,
-                    Type = BoxType.user
-                },
-                Item = new BoxRequestEntity
-                {
-                    Id = input.FolderId,
-                    Type = BoxType.folder
-                },
-                Role = input.Role
-            };
-            var collaboration = await client.CollaborationsManager.AddCollaborationAsync(addCollaboratorRequest, 
-                notify: input.NotifyCollaborator);
-            return new CollaborationDto(collaboration);
-        }
+                Id = input.FolderId,
+                Type = BoxType.folder
+            },
+            Role = input.Role
+        };
+        var collaboration = await client.CollaborationsManager.AddCollaborationAsync(addCollaboratorRequest,
+            notify: input.NotifyCollaborator);
+        return new CollaborationDto(collaboration);
     }
 }
