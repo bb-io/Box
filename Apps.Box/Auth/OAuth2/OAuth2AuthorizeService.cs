@@ -1,6 +1,7 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.String;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Apps.Box.Auth.OAuth2;
@@ -25,6 +26,6 @@ public class OAuth2AuthorizeService : BaseInvocable, IOAuth2AuthorizeService
             { "authorization_url", oauthUrl},
             { "actual_redirect_uri", InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString() },
         };
-        return QueryHelpers.AddQueryString(bridgeOauthUrl, parameters);
+        return bridgeOauthUrl.WithQuery(parameters);
     }
 }
