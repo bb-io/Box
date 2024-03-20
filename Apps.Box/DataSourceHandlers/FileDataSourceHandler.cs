@@ -17,14 +17,14 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
     {
-        var files = new Dictionary<string, string>();
-        
-        if (string.IsNullOrWhiteSpace(context.SearchString))
-            await GetTwentyFiles(files);
-        else
-            files = await SearchFiles(context.SearchString);
+        //var files = new Dictionary<string, string>();
 
-        return files;
+        //if (string.IsNullOrWhiteSpace(context.SearchString))
+        //    await GetTwentyFiles(files);
+        //else
+        //    files = await SearchFiles(context.SearchString);
+
+        return new Dictionary<string, string>() { {"test", "test" } };//files;
     }
 
     private async Task<Dictionary<string, string>> SearchFiles(string searchString)
