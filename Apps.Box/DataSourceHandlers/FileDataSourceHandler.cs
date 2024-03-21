@@ -11,20 +11,20 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
     
     public FileDataSourceHandler(InvocationContext invocationContext) : base(invocationContext)
     {
-       // _client = new BlackbirdBoxClient(invocationContext.AuthenticationCredentialsProviders, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+       _client = new BlackbirdBoxClient(invocationContext.AuthenticationCredentialsProviders, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
     }
 
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
     {
-        //var files = new Dictionary<string, string>();
+        var files = new Dictionary<string, string>();
 
-        //if (string.IsNullOrWhiteSpace(context.SearchString))
-        //    await GetTwentyFiles(files);
-        //else
-        //    files = await SearchFiles(context.SearchString);
+        if (string.IsNullOrWhiteSpace(context.SearchString))
+            await GetTwentyFiles(files);
+        else
+            files = await SearchFiles(context.SearchString);
 
-        return new Dictionary<string, string>() { {"test", "test" } };//files;
+        return files;
     }
 
     private async Task<Dictionary<string, string>> SearchFiles(string searchString)
