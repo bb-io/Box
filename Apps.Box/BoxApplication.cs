@@ -2,13 +2,20 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Common.Metadata;
 
 namespace Apps.Box;
 
-public class BoxApplication : BaseInvocable, IApplication
+public class BoxApplication : BaseInvocable, IApplication, ICategoryProvider
 {
     private readonly Dictionary<Type, object> _typesInstances;
 
+    public IEnumerable<ApplicationCategory> Categories
+    {
+        get => [ApplicationCategory.FileManagementAndStorage];
+        set { }
+    }
+    
     public BoxApplication(InvocationContext invocationContext) : base(invocationContext)
     {
         _typesInstances = CreateTypesInstances();
