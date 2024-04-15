@@ -1,6 +1,7 @@
 ﻿using Apps.Box.DataSourceHandlers;
 using Apps.Box.DataSourceHandlers.EnumHandlers;
 using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Box.Models.Requests;
@@ -17,6 +18,6 @@ public class AddFolderCollaboratorRequest
     [Display("Folder")]
     public string FolderId { get; set; }
 
-    [DataSource(typeof(RoleDataHandler))]
+    [StaticDataSource(typeof(RoleDataHandler))]
     public string Role { get; set; }
 }
