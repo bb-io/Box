@@ -1,4 +1,5 @@
-﻿using Box.V2.Models;
+﻿using Blackbird.Applications.Sdk.Common;
+using Box.V2.Models;
 
 namespace Apps.Box.Dtos;
 
@@ -9,5 +10,6 @@ public class FileDto : BoxItemDto
         File = file.Id;
     }
     
+    [Display("File ID")]
     public string File { get; set; }
 }
