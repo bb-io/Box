@@ -4,6 +4,8 @@ Blackbird is the new automation backbone for the language technology industry. B
 
 ## Introduction
 
+<!-- begin docs -->
+
 Box is a cloud-based content management and file sharing platform that enables individuals and businesses to store, access, and collaborate on documents and files from anywhere. It offers features like secure file storage, real-time collaboration, and integrations with various productivity tools, enhancing team efficiency and data accessibility.
 
 ## Before setting up
