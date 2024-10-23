@@ -7,6 +7,6 @@ namespace Apps.Box.Models.Requests;
 public class DeleteDirectoryRequest
 {
     [DataSource(typeof(FolderDataSourceHandler))]
-    [Display("Folder")]
+    [Display("Folder ID")]
     public string FolderId { get; set; }
 }
