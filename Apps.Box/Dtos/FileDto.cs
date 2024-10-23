@@ -5,6 +5,11 @@ namespace Apps.Box.Dtos;
 
 public class FileDto : BoxItemDto
 {
+    public FileDto(BoxItem item, string id)  : base(item)
+    { 
+        File = id;
+    }
+
     public FileDto(BoxFile file) : base(file)
     {
         File = file.Id;

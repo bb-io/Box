@@ -10,6 +10,6 @@ public class CreateFolderRequest
     public string FolderName { get; set; }
 
     [DataSource(typeof(FolderDataSourceHandler))]
-    [Display("Parent folder")]
+    [Display("Parent folder ID")]
     public string ParentFolderId { get; set; }
 }

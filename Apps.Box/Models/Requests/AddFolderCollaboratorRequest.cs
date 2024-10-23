@@ -15,7 +15,7 @@ public class AddFolderCollaboratorRequest
     public bool NotifyCollaborator { get; set; }
         
     [DataSource(typeof(FolderDataSourceHandler))]
-    [Display("Folder")]
+    [Display("Folder ID")]
     public string FolderId { get; set; }
 
     [StaticDataSource(typeof(RoleDataHandler))]

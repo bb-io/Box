@@ -5,6 +5,6 @@ namespace Apps.Box.Models.Responses;
 
 public class ListDirectoryResponse
 {
-    [Display("Directory items")]
-    public IEnumerable<DirectoryItemDto> DirectoriesItems { get; set; }
+    [Display("Files")]
+    public IEnumerable<FileDto> Files { get; set; }
 }

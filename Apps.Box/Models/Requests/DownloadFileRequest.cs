@@ -7,6 +7,6 @@ namespace Apps.Box.Models.Requests;
 public class DownloadFileRequest
 {
     [DataSource(typeof(FileDataSourceHandler))]
-    [Display("File")]
+    [Display("File ID")]
     public string FileId { get; set; }
 }

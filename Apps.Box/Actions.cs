@@ -8,6 +8,7 @@ using Box.V2.Models;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
+using System.Collections.Generic;
 
 namespace Apps.Box;
 
@@ -25,16 +26,17 @@ public class Actions : BaseInvocable
         _fileManagementClient = fileManagementClient;
     }
 
-    [Action("List directory", Description = "List specified directory")]
+    [Action("Search files", Description = "Search for files in a folder")]
     public async Task<ListDirectoryResponse> ListDirectory([ActionParameter] ListDirectoryRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-        var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit);
-        var folderItems = items.Entries.Select(i => new DirectoryItemDto { Name = i.Name }).ToList();
+        var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit, 0, sort: BoxSortBy.Name.ToString(),
+            direction: BoxSortDirection.DESC, fields: new[] { "id", "type", "name", "path", "size", "description" });
+        var folderItems = items.Entries.Where(i => i.Type == "file").Select(i => new FileDto(i, i.Id)).ToList();
 
         return new ListDirectoryResponse
         {
-            DirectoriesItems = folderItems
+            Files = folderItems
         };
     }
 
@@ -123,7 +125,7 @@ public class Actions : BaseInvocable
         return new FolderDto(folder);
     }
 
-    [Action("Delete directory", Description = "Delete directory")]
+    [Action("Delete folder", Description = "Delete folder")]
     public async Task DeleteDirectory([ActionParameter] DeleteDirectoryRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
