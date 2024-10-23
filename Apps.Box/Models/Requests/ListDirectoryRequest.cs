@@ -7,7 +7,7 @@ namespace Apps.Box.Models.Requests;
 public class ListDirectoryRequest
 {
     [DataSource(typeof(FolderDataSourceHandler))]
-    [Display("Folder")]
+    [Display("Folder ID")]
     public string FolderId { get; set; }
 
     public int Limit { get; set; }

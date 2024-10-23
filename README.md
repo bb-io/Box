@@ -26,7 +26,7 @@ Before you can connect you need to make sure that:
 
 ## Actions
 
-- **Search files**: Retrieve a list of files from a specified directory. This action helps you to see all the contents within a folder.
+- **Search files in folder**: Retrieve a list of files from a specified directory. This action helps you to see all the contents within a folder.
 - **Get file information**: Obtain detailed information about a specific file, including its name and other metadata.
 - **Rename file**: Change the name of an existing file to something new.
 - **Download file**: Download a file from the directory, allowing you to save it locally or use it as needed.

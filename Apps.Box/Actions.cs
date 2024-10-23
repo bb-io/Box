@@ -26,12 +26,12 @@ public class Actions : BaseInvocable
         _fileManagementClient = fileManagementClient;
     }
 
-    [Action("Search files", Description = "Search for files in a folder")]
+    [Action("Search files in folder", Description = "Search for files in a folder")]
     public async Task<ListDirectoryResponse> ListDirectory([ActionParameter] ListDirectoryRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
         var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit, 0, sort: BoxSortBy.Name.ToString(),
-            direction: BoxSortDirection.DESC, fields: new[] { "id", "type", "name", "path", "size", "description" });
+            direction: BoxSortDirection.DESC, fields: new[] { "id", "type", "name", "path_collection", "size", "description" });
         var folderItems = items.Entries.Where(i => i.Type == "file").Select(i => new FileDto(i, i.Id)).ToList();
 
         return new ListDirectoryResponse
