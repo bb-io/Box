@@ -65,7 +65,7 @@ public class Actions : BaseInvocable
     public async Task<DownloadFileResponse> DownloadFile([ActionParameter] DownloadFileRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-        var fileStream = await client.FilesManager.DownloadAsync(input.FileId);
+        using var fileStream = await client.FilesManager.DownloadAsync(input.FileId);
         var fileInfo = await client.FilesManager.GetInformationAsync(input.FileId);
         var filename = fileInfo.Name;
 
@@ -153,5 +153,14 @@ public class Actions : BaseInvocable
         var collaboration = await client.CollaborationsManager.AddCollaborationAsync(addCollaboratorRequest,
             notify: input.NotifyCollaborator);
         return new CollaborationDto(collaboration);
+    }
+
+    [Action("Debug", Description = "Search for files in a folder")]
+    public async Task<DebugResponse> Debug()
+    {     
+        return new DebugResponse
+        {
+            AccessToken = Creds.First(p => p.KeyName == "access_token").Value,
+        };
     }
 }
