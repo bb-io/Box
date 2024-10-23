@@ -8,9 +8,7 @@ using Box.V2.Models;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
-using System.Collections.Generic;
 using Blackbird.Applications.Sdk.Common.Files;
-using RestSharp;
 
 namespace Apps.Box;
 
