@@ -9,6 +9,8 @@ using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using System.Collections.Generic;
+using Blackbird.Applications.Sdk.Common.Files;
+using RestSharp;
 
 namespace Apps.Box;
 
@@ -65,14 +67,15 @@ public class Actions : BaseInvocable
     public async Task<DownloadFileResponse> DownloadFile([ActionParameter] DownloadFileRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-        using var fileStream = await client.FilesManager.DownloadAsync(input.FileId);
+        var uri = await client.FilesManager.GetDownloadUriAsync(input.FileId);
         var fileInfo = await client.FilesManager.GetInformationAsync(input.FileId);
-        var filename = fileInfo.Name;
+        var fileName = fileInfo.Name;
 
-        if (!MimeTypes.TryGetMimeType(filename, out var contentType))
+        if (!MimeTypes.TryGetMimeType(fileName, out var contentType))
             contentType = MediaTypeNames.Application.Octet;
 
-        var file = await _fileManagementClient.UploadAsync(fileStream, contentType, filename);
+        var fileRequest = new HttpRequestMessage(HttpMethod.Get, uri);
+        var file = new FileReference(fileRequest, fileName, contentType);
 
         return new()
         {
