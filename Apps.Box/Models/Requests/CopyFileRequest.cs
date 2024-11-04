@@ -22,5 +22,8 @@ namespace Apps.Box.Models.Requests
         [DataSource(typeof(FolderDataSourceHandler))]
         [Display("New parent folder ID")]
         public string ParentFolderId { get; set; }
+
+        [Display("Remove original?", Description = "If set to true, the original file will be deleted.")]
+        public bool? RemoveOriginal { get; set; }
     }
 }

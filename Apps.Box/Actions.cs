@@ -123,6 +123,11 @@ public class Actions : BaseInvocable
             },
             Id = input.FileId
         });
+
+        if (input.RemoveOriginal.HasValue && input.RemoveOriginal.Value)
+        {
+            await client.FilesManager.DeleteAsync(input.FileId);
+        }
     }
 
     [Action("Create folder", Description = "Create folder")]
