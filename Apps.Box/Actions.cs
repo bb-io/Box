@@ -110,6 +110,21 @@ public class Actions : BaseInvocable
         await client.FilesManager.DeleteAsync(input.FileId);
     }
 
+    [Action("Copy file", Description = "Copy file")]
+    public async Task CopyFile([ActionParameter] CopyFileRequest input)
+    {
+        var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
+        await client.FilesManager.CopyAsync(new BoxFileRequest 
+        {
+            Name = input.NewName,
+            Parent = new BoxRequestEntity
+            {
+                Id = input.ParentFolderId
+            },
+            Id = input.FileId
+        });
+    }
+
     [Action("Create folder", Description = "Create folder")]
     public async Task<FolderDto> CreateDirectory([ActionParameter] CreateFolderRequest input)
     {
@@ -156,12 +171,12 @@ public class Actions : BaseInvocable
         return new CollaborationDto(collaboration);
     }
 
-    [Action("Debug", Description = "Search for files in a folder")]
-    public async Task<DebugResponse> Debug()
-    {     
-        return new DebugResponse
-        {
-            AccessToken = Creds.First(p => p.KeyName == "access_token").Value,
-        };
-    }
+    //[Action("Debug", Description = "Search for files in a folder")]
+    //public async Task<DebugResponse> Debug()
+    //{     
+    //    return new DebugResponse
+    //    {
+    //        AccessToken = Creds.First(p => p.KeyName == "access_token").Value,
+    //    };
+    //}
 }
