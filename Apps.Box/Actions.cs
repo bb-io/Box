@@ -34,8 +34,7 @@ public class Actions : BaseInvocable
 
         if (input.SearchSubFodlers.HasValue && input.SearchSubFodlers.Value)
         {
-            var files = new List<FileDto>();
-            await GetFiles(files, 0, input.FolderId ?? "0", "", input.Limit ?? 1000);
+            var files = await GetFiles(0, input.FolderId ?? "0", input.Limit ?? 1000);
             return new ListDirectoryResponse
             {
                 Files = files
@@ -52,9 +51,9 @@ public class Actions : BaseInvocable
         };
     }
 
-    private async Task GetFiles(List<FileDto> files, int offset = 0, string folderId = "0",
-        string folderPath = "", int limit = 1000)
+    private async Task<List<FileDto>> GetFiles(int offset = 0, string folderId = "0", int limit = 1000)
     {
+        var files = new List<FileDto>();
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
 
         var items = await client.FoldersManager.GetFolderItemsAsync(folderId, limit, 0, sort: BoxSortBy.Name.ToString(),
@@ -64,20 +63,26 @@ public class Actions : BaseInvocable
         foreach (var item in items.Entries)
         {
             if (files.Count == limit)
-                return;
+                return files;
 
             if (item.Type == "file")
-                files.Append(new FileDto(item, item.Id));
+                files.Add(new FileDto(item, item.Id));
 
             else if (item.Type == "folder")
             {
-                var subfolderPath = folderPath == "" ? item.Name : folderPath + "/" + item.Name;
-                await GetFiles(files, offset, item.Id, subfolderPath);
+                var newFiles = await GetFiles(offset, item.Id);
+                files.AddRange(newFiles);
             }
         }
 
         if (items.TotalCount > limit + offset)
-            await GetFiles(files, offset + limit, folderId, folderPath);
+        {
+            var newFiles = await GetFiles(offset + limit, folderId);
+            files.AddRange(newFiles);
+        }
+
+        return files;
+
     }
 
     [Action("Get file information", Description = "Get file information")]
