@@ -27,10 +27,23 @@ public class Actions : BaseInvocable
     }
 
     [Action("Search files in folder", Description = "Search for files in a folder")]
-    public async Task<ListDirectoryResponse> ListDirectory([ActionParameter] ListDirectoryRequest input)
+    public async Task<ListDirectoryResponse> ListDirectory([ActionParameter] SearchFilesRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-        var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId, input.Limit, 0, sort: BoxSortBy.Name.ToString(),
+
+        if (input.SearchSubFodlers.HasValue && input.SearchSubFodlers.Value)
+        {
+            var files = await client.SearchManager.QueryAsync("", type: "file", limit: input.Limit ?? 200, ancestorFolderIds: new[] { input.FolderId ?? "0" },
+                contentTypes: new[] { "name", "description" }, fields: new[] { "id", "type", "name", "path_collection", "size", "description" });
+            var filesParsed = files.Entries.Select(i => new FileDto(i, i.Id)).ToList();
+
+            return new ListDirectoryResponse
+            {
+                Files = filesParsed
+            };
+        }
+
+        var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId ?? "0", input.Limit ?? 200, 0, sort: BoxSortBy.Name.ToString(),
             direction: BoxSortDirection.DESC, fields: new[] { "id", "type", "name", "path_collection", "size", "description" });
         var folderItems = items.Entries.Where(i => i.Type == "file").Select(i => new FileDto(i, i.Id)).ToList();
 
