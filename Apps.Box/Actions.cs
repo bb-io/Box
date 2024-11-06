@@ -201,7 +201,7 @@ public class Actions : BaseInvocable
             if (x.Message.Contains("already exists"))
 
             {
-                var folderID = Regex.Match(x.Message, "\\?\"id\\?\":\\?\"(.*?)\\?\"").Groups[1].Value;
+                var folderID = Regex.Match(x.Message, "\\?\\?\"id\\?\\?\":\\?\\?\"(.*?)\\?\\?\"").Groups[1].Value;
                 if (string.IsNullOrEmpty(folderID)) { throw new Exception("Folder ID is empty." + x.Message); }
                 return folderID;
             }
@@ -244,12 +244,12 @@ public class Actions : BaseInvocable
         return new CollaborationDto(collaboration);
     }
 
-    //[Action("Debug", Description = "Search for files in a folder")]
-    //public async Task<DebugResponse> Debug()
-    //{     
-    //    return new DebugResponse
-    //    {
-    //        AccessToken = Creds.First(p => p.KeyName == "access_token").Value,
-    //    };
-    //}
+    [Action("Debug", Description = "Search for files in a folder")]
+    public async Task<DebugResponse> Debug()
+    {
+        return new DebugResponse
+        {
+            AccessToken = Creds.First(p => p.KeyName == "access_token").Value,
+        };
+    }
 }
