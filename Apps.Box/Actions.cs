@@ -11,6 +11,7 @@ using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Common.Files;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Apps.Box;
 
@@ -201,9 +202,8 @@ public class Actions : BaseInvocable
             if (x.Message.Contains("already exists"))
 
             {
-                var folderID = Regex.Match(x.Message, "\\?\\?\"id\\?\\?\":\\?\\?\"(.*?)\\?\\?\"").Groups[1].Value;
-                if (string.IsNullOrEmpty(folderID)) { throw new Exception("Folder ID is empty." + x.Message); }
-                return folderID;
+                var errorDetails = JsonConvert.DeserializeObject<ErrorDto>(x.Message);
+                return errorDetails.ContextInfo.Conflicts.First().Id;
             }
 
             else
