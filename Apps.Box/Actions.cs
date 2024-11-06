@@ -179,7 +179,7 @@ public class Actions : BaseInvocable
     }
 
     [Action("Create folder", Description = "Create folder")]
-    public async Task<FolderDto> CreateDirectory([ActionParameter] CreateFolderRequest input)
+    public async Task<string> CreateDirectory([ActionParameter] CreateFolderRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
         try
@@ -193,7 +193,7 @@ public class Actions : BaseInvocable
                 }
             };
             var folder = await client.FoldersManager.CreateAsync(folderRequest);
-            return new FolderDto(folder);
+            return folder.Id;
 
         }
         catch (Exception x)
@@ -202,9 +202,8 @@ public class Actions : BaseInvocable
 
             {
                 var folderID = Regex.Match(x.Message, "\\?\"id\\?\":\\?\"(.*?)\\?\"").Groups[1].Value;
-                if (string.IsNullOrEmpty(folderID)) { throw new Exception(x.Message); }
-                var folder = await client.FoldersManager.GetInformationAsync(folderID, fields: new[] { "id", "type", "name", "parent" });
-                return new FolderDto(folder);
+                if (string.IsNullOrEmpty(folderID)) { throw new Exception("Folder ID is empty." + x.Message); }
+                return folderID;
             }
 
             else
