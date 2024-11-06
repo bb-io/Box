@@ -44,6 +44,8 @@ public class Actions : BaseInvocable
 
         var items = await client.FoldersManager.GetFolderItemsAsync(input.FolderId ?? "0", input.Limit ?? 200, 0, sort: BoxSortBy.Name.ToString(),
             direction: BoxSortDirection.DESC, fields: new[] { "id", "type", "name", "path_collection", "size", "description" });
+        if (!items.Entries.Any(i => i.Type == "file"))
+        { return new ListDirectoryResponse(); }
         var folderItems = items.Entries.Where(i => i.Type == "file").Select(i => new FileDto(i, i.Id)).ToList();
 
         return new ListDirectoryResponse
