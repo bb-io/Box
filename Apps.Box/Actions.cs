@@ -10,6 +10,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Common.Files;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Apps.Box;
 
@@ -179,16 +180,36 @@ public class Actions : BaseInvocable
     public async Task<FolderDto> CreateDirectory([ActionParameter] CreateFolderRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-        var folderRequest = new BoxFolderRequest
+        try
         {
-            Name = input.FolderName,
-            Parent = new BoxRequestEntity
+            var folderRequest = new BoxFolderRequest
             {
-                Id = input.ParentFolderId
+                Name = input.FolderName,
+                Parent = new BoxRequestEntity
+                {
+                    Id = input.ParentFolderId
+                }
+            };
+            var folder = await client.FoldersManager.CreateAsync(folderRequest);
+            return new FolderDto(folder);
+
+        }
+        catch (Exception x)
+        {
+            if (x.Message.Contains("already exists"))
+
+            {
+                var folderID = Regex.Match(x.Message, "\"id\":\"(.*?)\"").Groups[1].Value;
+                var folder = await client.FoldersManager.GetInformationAsync(folderID, fields: new[] { "id", "type", "name" });
+                return new FolderDto(folder);
             }
-        };
-        var folder = await client.FoldersManager.CreateAsync(folderRequest);
-        return new FolderDto(folder);
+
+            else
+            {
+                throw x;
+            }
+        }
+
     }
 
     [Action("Delete folder", Description = "Delete folder")]
