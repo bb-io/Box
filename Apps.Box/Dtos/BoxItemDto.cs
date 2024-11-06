@@ -11,7 +11,7 @@ public abstract class BoxItemDto
         Name = item.Name;
         Size = item.Size;
         Description = item.Description;
-        ParentFolderId = item.Parent.Id;
+        ParentFolderId = item.Parent?.Id ?? "" ;
     }
     
     public string Path { get; set; }
