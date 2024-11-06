@@ -202,7 +202,7 @@ public class Actions : BaseInvocable
 
             {
                 var folderID = Regex.Match(x.Message, "\"id\":\"(.*?)\"").Groups[1].Value;
-                var folder = await client.FoldersManager.GetInformationAsync(folderID, fields: new[] { "id", "type", "name" });
+                var folder = await client.FoldersManager.GetInformationAsync(folderID, fields: new[] { "id", "type", "name", "parent" });
                 return new FolderDto(folder);
             }
 
