@@ -12,6 +12,7 @@ using Blackbird.Applications.Sdk.Common.Files;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Apps.Box;
 
@@ -183,34 +184,26 @@ public class Actions : BaseInvocable
     public async Task<string> CreateDirectory([ActionParameter] CreateFolderRequest input)
     {
         var client = new BlackbirdBoxClient(Creds, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
-        try
+        
+        var items = await client.FoldersManager.GetFolderItemsAsync(input.ParentFolderId, 300, 0, sort: BoxSortBy.Name.ToString(),
+        direction: BoxSortDirection.DESC, fields: new[] { "id", "type", "name" });
+
+        var folders = items.Entries.Where(i => i.Type == "folder").ToList();
+        if (folders.Any(x => x.Name == input.FolderName)) 
         {
-            var folderRequest = new BoxFolderRequest
-            {
-                Name = input.FolderName,
-                Parent = new BoxRequestEntity
-                {
-                    Id = input.ParentFolderId
-                }
-            };
-            var folder = await client.FoldersManager.CreateAsync(folderRequest);
-            return folder.Id;
-
+            return folders.FirstOrDefault(x => x.Name == input.FolderName).Id;
         }
-        catch (Exception x)
+
+        var folderRequest = new BoxFolderRequest
         {
-            if (x.Message.Contains("already exists"))
-
+            Name = input.FolderName,
+            Parent = new BoxRequestEntity
             {
-                var errorDetails = JsonConvert.DeserializeObject<ErrorDto>(x.Message);
-                return errorDetails.ContextInfo.Conflicts.First().Id;
+                Id = input.ParentFolderId
             }
-
-            else
-            {
-                throw x;
-            }
-        }
+        };
+        var folder = await client.FoldersManager.CreateAsync(folderRequest);
+        return folder.Id;
 
     }
 
