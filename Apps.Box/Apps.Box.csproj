@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <Product>Box</Product>
     <Description>Secure collaboration with anyone, anywhere, on any device</Description>
-    <Version>1.2.17</Version>
+    <Version>1.2.18</Version>
     <AssemblyName>Apps.Box</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
