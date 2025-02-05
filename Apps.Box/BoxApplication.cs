@@ -6,7 +6,7 @@ using Blackbird.Applications.Sdk.Common.Metadata;
 
 namespace Apps.Box;
 
-public class BoxApplication : BaseInvocable, IApplication, ICategoryProvider
+public class BoxApplication : BoxInvocable, IApplication, ICategoryProvider
 {
     private readonly Dictionary<Type, object> _typesInstances;
 

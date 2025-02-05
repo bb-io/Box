@@ -368,3 +368,6 @@ FodyWeavers.xsd
 
 /Apps.Box/ApplicationConstants.cs
 /ConsoleApp1
+
+
+appsettings.json
