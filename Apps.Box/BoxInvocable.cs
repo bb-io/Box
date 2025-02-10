@@ -31,7 +31,7 @@ namespace Apps.Box
             {
                 await action();
             }
-            catch (Exception ex)
+            catch (BoxAPIException ex)
             {
                 throw new PluginApplicationException(ex.Message);
             }
@@ -43,7 +43,7 @@ namespace Apps.Box
             {
                 return await action();
             }
-            catch (BoxException ex)
+            catch (BoxAPIException ex)
             {
                 throw new PluginApplicationException(ex.Message);
             }
