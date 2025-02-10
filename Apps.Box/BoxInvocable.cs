@@ -33,7 +33,7 @@ namespace Apps.Box
             }
             catch (BoxAPIException ex)
             {
-                throw new PluginApplicationException(ex.Message);
+                throw new PluginApplicationException(ex.ErrorDescription);
             }
         }
 
@@ -45,7 +45,7 @@ namespace Apps.Box
             }
             catch (BoxAPIException ex)
             {
-                throw new PluginApplicationException(ex.Message);
+                throw new PluginApplicationException(ex.ErrorDescription);
             }
         }
 
