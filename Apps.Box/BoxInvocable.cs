@@ -7,6 +7,7 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Box.V2.Exceptions;
 
 namespace Apps.Box
 {
@@ -42,7 +43,7 @@ namespace Apps.Box
             {
                 return await action();
             }
-            catch (Exception ex)
+            catch (BoxException ex)
             {
                 throw new PluginApplicationException(ex.Message);
             }
