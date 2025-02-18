@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.Box;
 
@@ -88,6 +89,11 @@ public class Actions : BoxInvocable
     [Action("Get file information", Description = "Get file information")]
     public async Task<FileDto> GetFileInformation([ActionParameter] GetFileInformationRequest input)
     {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException("File ID is null or empty. Please check your input and try again");
+        }
+
         var file = await ExecuteWithErrorHandlingAsync(async () => await Client.FilesManager.GetInformationAsync(input.FileId));
         return new FileDto(file);
     }
