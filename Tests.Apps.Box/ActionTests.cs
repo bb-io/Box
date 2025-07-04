@@ -12,7 +12,7 @@ using Tests.Apps.Box.Base;
 namespace Tests.Apps.Box
 {
     [TestClass]
-    public class UploadFileTests : TestBase
+    public class ActionTests : TestBase
     {
         private Actions _actions;
 
@@ -38,6 +38,22 @@ namespace Tests.Apps.Box
             Assert.IsNotNull(_actions.UploadFile(request));
 
         }
+
+        [TestMethod]
+        public async void DownloadFile_IsSuccess()
+        {
+            var action = new Actions(InvocationContext, FileManager);
+
+            var response = await action.DownloadFile(new DownloadFileRequest()
+            {
+                FileId= "1910276562374"
+            });
+
+            Assert.IsNotNull(response);
+        }
+
+
+
 
         //[TestMethod]
         //public async Task FileUpload_InputNameMissing_ThrowsError()

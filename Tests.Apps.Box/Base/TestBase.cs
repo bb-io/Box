@@ -2,11 +2,6 @@
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests.Apps.Box.Base;
 public class TestBase
@@ -26,7 +21,7 @@ public class TestBase
         InvocationContext = new InvocationContext
         {
             AuthenticationCredentialsProviders = Creds,
-            UriInfo = new UriInfo() { AuthorizationCodeRedirectUri= new Uri("https://localhost")}
+            UriInfo = new UriInfo() { AuthorizationCodeRedirectUri = new Uri("https://localhost") }
         };
 
         FileManager = new FileManager(folderLocation);
