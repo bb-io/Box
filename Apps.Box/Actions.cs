@@ -101,6 +101,11 @@ public class Actions : BoxInvocable
     [Action("Rename file", Description = "Rename file")]
     public async Task<FileDto> RenameFile([ActionParameter] RenameFileRequest input)
     {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException("File ID is null or empty. Please check your input and try again");
+        }
+
         var fileUpdateRequest = new BoxFileRequest
         {
             Id = input.FileId,
@@ -113,6 +118,11 @@ public class Actions : BoxInvocable
     [Action("Download file", Description = "Download file")]
     public async Task<DownloadFileResponse> DownloadFile([ActionParameter] DownloadFileRequest input)
     {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException("File ID is null or empty. Please check your input and try again");
+        }
+
         var uri = await ExecuteWithErrorHandlingAsync(async () => await Client.FilesManager.GetDownloadUriAsync(input.FileId));
         var fileInfo = await ExecuteWithErrorHandlingAsync(async () => await Client.FilesManager.GetInformationAsync(input.FileId));
         var fileName = fileInfo.Name;
@@ -132,7 +142,11 @@ public class Actions : BoxInvocable
     [Action("Upload file", Description = "Upload file")]
     public async Task<FileDto> UploadFile([ActionParameter] UploadFileRequest input)
     {
-        
+        if (input.File is null)
+        {
+            throw new PluginMisconfigurationException("File is null or empty. Please check your input and try again");
+        }
+
         var uploadFileRequest = new BoxFileRequest
         {
             Name = input!.File!.Name,
@@ -154,12 +168,21 @@ public class Actions : BoxInvocable
     [Action("Delete file", Description = "Delete file")]
     public async Task DeleteFile([ActionParameter] DeleteFileRequest input)
     {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException("File ID is null or empty. Please check your input and try again");
+        }
         await ExecuteWithErrorHandlingAsync(async () => await Client.FilesManager.DeleteAsync(input.FileId));
     }
 
     [Action("Copy file", Description = "Copy file")]
     public async Task CopyFile([ActionParameter] CopyFileRequest input)
     {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException("File ID is null or empty. Please check your input and try again");
+        }
+
         await ExecuteWithErrorHandlingAsync(async () => await Client.FilesManager.CopyAsync(new BoxFileRequest 
         {
             Name = input.NewName,
