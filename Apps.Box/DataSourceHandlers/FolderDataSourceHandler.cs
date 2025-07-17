@@ -26,7 +26,9 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
             folders["0"] = RootFolderName;
         }
         else
+        {
             folders = await SearchFolders(context.SearchString);
+        }
         
         return folders;
     }
