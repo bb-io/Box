@@ -1,6 +1,6 @@
 namespace Apps.Box;
 
-public class ApplicationConstants
+public static class ApplicationConstants
 {
     public const string ClientId = "#{BOX_CLIENT_ID}#";
     public const string ClientSecret = "#{BOX_SECRET}#";

@@ -5,7 +5,7 @@ using Box.V2.Models;
 
 namespace Apps.Box.DataSourceHandlers;
 
-public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
+public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceItemHandler
 {
     private const string RootFolderName = "All files (root folder)";
     private readonly BlackbirdBoxClient _client;
@@ -15,15 +15,15 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
         _client = new BlackbirdBoxClient(invocationContext.AuthenticationCredentialsProviders, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
     }
 
-    public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
+    public async Task<IEnumerable<DataSourceItem>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
     {
-        var folders = new Dictionary<string, string>();
+        var folders = new List<DataSourceItem>();
 
         if (string.IsNullOrWhiteSpace(context.SearchString))
         {
             await GetTwentyFolders(folders);
-            folders["0"] = RootFolderName;
+            folders.Insert(0, new DataSourceItem("0", RootFolderName));
         }
         else
         {
@@ -33,7 +33,7 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
         return folders;
     }
 
-    private async Task<Dictionary<string, string>> SearchFolders(string searchString)
+    private async Task<List<DataSourceItem>> SearchFolders(string searchString)
     {
         string GetFolderPath(BoxItem folder)
         {
@@ -52,15 +52,16 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
             ancestorFolderIds: new[] { "0" }, contentTypes: new[] { "name" , "description" }, 
             fields: new [] { "id", "name", "path_collection" });
 
-        var foldersDictionary = folders.Entries.ToDictionary(f => f.Id, GetFolderPath);
+        var foldersDictionary = folders.Entries.Select(f => new DataSourceItem(f.Id, GetFolderPath(f)))
+            .ToList();
         
         if (RootFolderName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            foldersDictionary["0"] = RootFolderName;
+            foldersDictionary.Insert(0, new DataSourceItem("0", RootFolderName));
 
         return foldersDictionary;
     }
     
-    private async Task GetTwentyFolders(Dictionary<string, string> folders, int offset = 0, string folderId = "0", 
+    private async Task GetTwentyFolders(List<DataSourceItem> folders, int offset = 0, string folderId = "0", 
         string folderPath = "")
     {
         string GetFolderPath(BoxItem folder)
@@ -88,7 +89,7 @@ public class FolderDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
             if (item.Type == "folder")
             {
                 var subfolderPath = GetFolderPath(item);
-                folders[item.Id] = subfolderPath;
+                folders.Add(new DataSourceItem(item.Id, subfolderPath));
                 await GetTwentyFolders(folders, offset, item.Id, subfolderPath);
             }
         }

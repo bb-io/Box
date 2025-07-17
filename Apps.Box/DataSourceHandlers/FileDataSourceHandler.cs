@@ -5,7 +5,7 @@ using Box.V2.Models;
 
 namespace Apps.Box.DataSourceHandlers;
 
-public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
+public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceItemHandler
 {
     private readonly BlackbirdBoxClient _client;
     
@@ -14,20 +14,23 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
        _client = new BlackbirdBoxClient(invocationContext.AuthenticationCredentialsProviders, InvocationContext.UriInfo.AuthorizationCodeRedirectUri.ToString());
     }
 
-    public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
+    public async Task<IEnumerable<DataSourceItem>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
     {
-        var files = new Dictionary<string, string>();
-
+        var files = new List<DataSourceItem>();
         if (string.IsNullOrWhiteSpace(context.SearchString))
+        {
             await GetTwentyFiles(files);
+        }
         else
+        {
             files = await SearchFiles(context.SearchString);
+        }
 
         return files;
     }
 
-    private async Task<Dictionary<string, string>> SearchFiles(string searchString)
+    private async Task<List<DataSourceItem>> SearchFiles(string searchString)
     {
         string GetFilePath(BoxItem file)
         {
@@ -42,10 +45,10 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
         var files = await _client.SearchManager.QueryAsync(searchString, type: "file", limit: 20, ancestorFolderIds: new[] { "0" }, 
             contentTypes: new[] { "name" , "description" }, fields: new [] { "id", "name", "path_collection" });
 
-        return files.Entries.ToDictionary(f => f.Id, GetFilePath);
+        return files.Entries.Select(f => new DataSourceItem(f.Id, GetFilePath(f))).ToList();
     }
     
-    private async Task GetTwentyFiles(Dictionary<string, string> files, int offset = 0, string folderId = "0", 
+    private async Task GetTwentyFiles(List<DataSourceItem> files, int offset = 0, string folderId = "0", 
         string folderPath = "")
     {
         string GetFilePath(BoxItem file)
@@ -68,10 +71,15 @@ public class FileDataSourceHandler : BaseInvocable, IAsyncDataSourceHandler
         foreach (var item in items.Entries)
         {
             if (files.Count == limit)
+            {
                 return;
-            
+            }
+
             if (item.Type == "file")
-                files[item.Id] = GetFilePath(item);
+            {
+                var filePath = GetFilePath(item);
+                files.Add(new DataSourceItem(item.Id, filePath));
+            }
                 
             else if (item.Type == "folder")
             {
