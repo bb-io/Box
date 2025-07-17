@@ -6,7 +6,7 @@ namespace Apps.Box.Events.Polling.Models;
 public class PollingFileResponse
 {
     [Display("File ID")]
-    public string Id { get; set; }
+    public string FileId { get; set; }
     public string Path { get; set; }
     public string Name { get; set; }
     public long? Size { get; set; }
@@ -14,7 +14,7 @@ public class PollingFileResponse
     
     public PollingFileResponse(BoxItem item)
     {
-        Id = item.Id;
+        FileId = item.Id;
         Path = string.Join('/', item.PathCollection.Entries.Select(p => p.Name)) + "/";
         Name = item.Name;
         Size = item.Size;
