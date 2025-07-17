@@ -1,5 +1,6 @@
 using Apps.Box.Events.Polling.Models;
 using Apps.Box.Events.Polling.Models.Memory;
+using Blackbird.Applications.SDK.Blueprints;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Polling;
@@ -19,8 +20,9 @@ public class PollingList : BaseInvocable
     }
 
     [PollingEvent("On files created or updated", "On any files created or updated")]
-    public async Task<PollingEventResponse<DateMemory, ListFilesResponse>> OnFilesAddedOrUpdated(
-        PollingEventRequest<DateMemory> request)
+    [BlueprintEventDefinition(BlueprintEvent.FilesCreatedOrUpdated)]
+    public async Task<PollingEventResponse<DateMemory, ListFilesResponse>> OnFilesAddedOrUpdated(PollingEventRequest<DateMemory> request,
+        [PollingEventParameter] ParentFolderInput parentFolder)
     {
         if (request.Memory == null)
         {
@@ -48,6 +50,10 @@ public class PollingList : BaseInvocable
                     LastInteractionDate = DateTimeOffset.UtcNow
                 }
             };
+        
+        changedItems = changedItems
+            .Where(x => parentFolder.FolderId == null || x.PathCollection?.Entries.Any(e => e.Id == parentFolder.FolderId) == true)
+            .ToArray();
 
         return new()
         {

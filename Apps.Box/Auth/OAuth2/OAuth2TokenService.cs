@@ -5,14 +5,11 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.Box.Auth.OAuth2;
 
-public class OAuth2TokenService : BaseInvocable, IOAuth2TokenService
+public class OAuth2TokenService(InvocationContext invocationContext)
+    : BaseInvocable(invocationContext), IOAuth2TokenService
 { 
     private const string TokenUrl = "https://api.box.com/oauth2/token";
     private const string ExpiresAtKeyName = "expires_at";
-
-    public OAuth2TokenService(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
 
     public bool IsRefreshToken(Dictionary<string, string> values) 
         => values.TryGetValue(ExpiresAtKeyName, out var expireValue) && DateTime.UtcNow > DateTime.Parse(expireValue);

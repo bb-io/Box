@@ -5,11 +5,9 @@ using Box.V2.Config;
 
 namespace Apps.Box;
 
-public class BlackbirdBoxClient : BoxClient
+public class BlackbirdBoxClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, string redirectUri)
+    : BoxClient(GetConfig(redirectUri), GetSession(authenticationCredentialsProviders))
 {
-    public BlackbirdBoxClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, string redirectUri) 
-        : base(GetConfig(redirectUri), GetSession(authenticationCredentialsProviders)) { }
-        
     private static IBoxConfig GetConfig(string redirectUri) 
         => new BoxConfigBuilder(ApplicationConstants.ClientId, ApplicationConstants.ClientSecret, 
             new Uri(redirectUri)).Build();

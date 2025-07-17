@@ -1,20 +1,21 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Blackbird.Applications.SDK.Blueprints.Interfaces.FileStorage;
+using Blackbird.Applications.Sdk.Common;
 using Box.V2.Models;
 
 namespace Apps.Box.Dtos;
 
-public class FileDto : BoxItemDto
+public class FileDto : BoxItemDto, IDownloadFileInput
 {
     public FileDto(BoxItem item, string id)  : base(item)
     { 
-        File = id;
+        FileId = id;
     }
 
     public FileDto(BoxFile file) : base(file)
     {
-        File = file.Id;
+        FileId = file.Id;
     }
     
     [Display("File ID")]
-    public string File { get; set; }
+    public string FileId { get; set; }
 }
