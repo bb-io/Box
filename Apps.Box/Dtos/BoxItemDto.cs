@@ -12,6 +12,7 @@ public abstract class BoxItemDto
         Size = item.Size;
         Description = item.Description;
         ParentFolderId = item.Parent?.Id ?? "" ;
+        CreatedBy = item.CreatedBy?.Name ?? "";
     }
     
     public string Path { get; set; }
@@ -21,4 +22,7 @@ public abstract class BoxItemDto
 
     [Display("Parent folder ID")]
     public string ParentFolderId { get; set; }
+
+    [Display("Created by")]
+    public string CreatedBy { get; set; }
 }
