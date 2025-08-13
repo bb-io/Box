@@ -32,7 +32,7 @@ public class StorageActions(InvocationContext invocationContext, IFileManagement
         var items = await ExecuteWithErrorHandlingAsync(async () => await Client.FoldersManager.GetFolderItemsAsync(
             input.FolderId ?? "0", input.Limit ?? 200, 0, sort: BoxSortBy.Name.ToString(),
             direction: BoxSortDirection.DESC,
-            fields: new[] { "id", "type", "name", "path_collection", "size", "description" }));
+            fields: new[] { "id", "type", "name", "path_collection", "size", "description", "created_by", "modified_by" }));
         
         if (!items.Entries.Any(i => i.Type == "file"))
         {
@@ -130,6 +130,28 @@ public class StorageActions(InvocationContext invocationContext, IFileManagement
         {
             Id = input.FileId,
             Name = input.NewFilename
+        };
+        var file = await ExecuteWithErrorHandlingAsync(async () =>
+            await Client.FilesManager.UpdateInformationAsync(fileUpdateRequest));
+        return new FileDto(file);
+    }
+
+    [Action("Move file", Description = "Move file to a different parent folder")]
+    public async Task<FileDto> MoveFile([ActionParameter] MoveFileRequest input)
+    {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException(
+                "File ID is null or empty. Please check your input and try again");
+        }
+
+        var fileUpdateRequest = new BoxFileRequest
+        {
+            Id = input.FileId,
+            Parent = new BoxRequestEntity
+            {
+                Id = input.FolderId
+            }
         };
         var file = await ExecuteWithErrorHandlingAsync(async () =>
             await Client.FilesManager.UpdateInformationAsync(fileUpdateRequest));
