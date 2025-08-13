@@ -13,6 +13,7 @@ public abstract class BoxItemDto
         Description = item.Description;
         ParentFolderId = item.Parent?.Id ?? "" ;
         CreatedBy = item.CreatedBy?.Name ?? "";
+        ModifiedBy = item.ModifiedBy?.Name ?? "";
     }
     
     public string Path { get; set; }
@@ -25,4 +26,7 @@ public abstract class BoxItemDto
 
     [Display("Created by")]
     public string CreatedBy { get; set; }
+
+    [Display("Modified by")]
+    public string ModifiedBy { get; set; }
 }

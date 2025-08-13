@@ -136,6 +136,28 @@ public class StorageActions(InvocationContext invocationContext, IFileManagement
         return new FileDto(file);
     }
 
+    [Action("Move file", Description = "Move file to a different parent folder")]
+    public async Task<FileDto> MoveFile([ActionParameter] MoveFileRequest input)
+    {
+        if (string.IsNullOrWhiteSpace(input.FileId))
+        {
+            throw new PluginMisconfigurationException(
+                "File ID is null or empty. Please check your input and try again");
+        }
+
+        var fileUpdateRequest = new BoxFileRequest
+        {
+            Id = input.FileId,
+            Parent = new BoxRequestEntity
+            {
+                Id = input.FolderId
+            }
+        };
+        var file = await ExecuteWithErrorHandlingAsync(async () =>
+            await Client.FilesManager.UpdateInformationAsync(fileUpdateRequest));
+        return new FileDto(file);
+    }
+
     [Action("Delete file", Description = "Delete file")]
     public async Task DeleteFile([ActionParameter] DeleteFileRequest input)
     {
