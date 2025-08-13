@@ -32,7 +32,7 @@ public class StorageActions(InvocationContext invocationContext, IFileManagement
         var items = await ExecuteWithErrorHandlingAsync(async () => await Client.FoldersManager.GetFolderItemsAsync(
             input.FolderId ?? "0", input.Limit ?? 200, 0, sort: BoxSortBy.Name.ToString(),
             direction: BoxSortDirection.DESC,
-            fields: new[] { "id", "type", "name", "path_collection", "size", "description", "created_by" }));
+            fields: new[] { "id", "type", "name", "path_collection", "size", "description", "created_by", "modified_by" }));
         
         if (!items.Entries.Any(i => i.Type == "file"))
         {
