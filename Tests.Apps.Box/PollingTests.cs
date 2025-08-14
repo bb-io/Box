@@ -17,7 +17,7 @@ namespace Tests.Apps.Box
             {
                 Memory = new DateMemory
                 {
-                    LastInteractionDate = DateTimeOffset.UtcNow.AddDays(-1)
+                    LastInteractionDate = DateTimeOffset.UtcNow.AddDays(-10)
                 }
             }, new ParentFolderInput
             {
