@@ -36,7 +36,7 @@ public class PollingList : BaseInvocable
             };
         }
 
-        var changedItems = (await GetAllFiles())
+        var changedItems = (await GetAllFiles(parentFolder.FolderId))
             .Where(x => x.CreatedAt > request.Memory.LastInteractionDate ||
                         x.ModifiedAt > request.Memory.LastInteractionDate)
             .ToArray();
@@ -113,15 +113,18 @@ public class PollingList : BaseInvocable
         };
     }
 
-    private async Task<ICollection<BoxItem>> GetAllFiles()
+    private async Task<ICollection<BoxItem>> GetAllFiles(string? startFolderId)
     {
-        var files = new List<BoxItem>();
-        await FillInFiles(files);
+        var rootId = string.IsNullOrWhiteSpace(startFolderId)
+       ? "0"
+       : startFolderId.Trim();
 
+        var files = new List<BoxItem>();
+        await FillInFiles(files, rootId);
         return files;
     }
 
-    private async Task FillInFiles(ICollection<BoxItem> files, string folderId = "0", string folderPath = "")
+    private async Task FillInFiles(ICollection<BoxItem> files, string folderId , string folderPath = "")
     {
         var items = await _client.FoldersManager.GetFolderItemsAsync(folderId, 1000, autoPaginate: true,
             fields: ["name", "path_collection", "size", "description", "created_at", "modified_at"]);
@@ -133,12 +136,9 @@ public class PollingList : BaseInvocable
 
             if (item.Type == "folder")
             {
-                var subfolderPath = folderPath == "" ? item.Name : folderPath + "/" + item.Name;
+                var subfolderPath = string.IsNullOrEmpty(folderPath) ? item.Name : folderPath + "/" + item.Name;
                 await FillInFiles(files, item.Id, subfolderPath);
             }
         }
-
-        if (items.TotalCount > files.Count)
-            await FillInFiles(files, folderId, folderPath);
     }
 }
