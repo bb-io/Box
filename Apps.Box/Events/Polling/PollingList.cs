@@ -9,7 +9,7 @@ using Box.V2.Models;
 namespace Apps.Box.Events.Polling;
 
 [PollingEventList]
-public class PollingList : BaseInvocable
+public class PollingList : BoxInvocable
 {
     private readonly BlackbirdBoxClient _client;
 
@@ -116,8 +116,8 @@ public class PollingList : BaseInvocable
     private async Task<ICollection<BoxItem>> GetAllFiles(string? startFolderId)
     {
         var rootId = string.IsNullOrWhiteSpace(startFolderId)
-       ? "0"
-       : startFolderId.Trim();
+               ? "0"
+               : startFolderId.Trim();
 
         var files = new List<BoxItem>();
         await FillInFiles(files, rootId);
@@ -126,8 +126,9 @@ public class PollingList : BaseInvocable
 
     private async Task FillInFiles(ICollection<BoxItem> files, string folderId , string folderPath = "")
     {
-        var items = await _client.FoldersManager.GetFolderItemsAsync(folderId, 1000, autoPaginate: true,
-            fields: ["name", "path_collection", "size", "description", "created_at", "modified_at"]);
+        var items = await ExecuteWithErrorHandlingAsync(() =>
+        Client.FoldersManager.GetFolderItemsAsync(folderId, 1000, autoPaginate: true,
+            fields: new[] { "name", "path_collection", "size", "description", "created_at", "modified_at" }));
 
         foreach (var item in items.Entries)
         {

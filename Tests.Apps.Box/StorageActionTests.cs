@@ -51,7 +51,7 @@ public class StorageActionTests : TestBase
     {
         var action = new StorageActions(InvocationContext, FileManager);
 
-        var response = await action.SearchFilesInFolder(new SearchFilesRequest { FolderId= "334735225784" });
+        var response = await action.SearchFilesInFolder(new SearchFilesRequest {});
 
         var json = Newtonsoft.Json.JsonConvert.SerializeObject(response, Newtonsoft.Json.Formatting.Indented);
         Console.WriteLine(json);

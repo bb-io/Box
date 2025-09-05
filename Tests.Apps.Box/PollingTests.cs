@@ -21,7 +21,7 @@ namespace Tests.Apps.Box
                 }
             }, new ParentFolderInput
             {
-                FolderId = "334735225784"
+                FolderId = "337923498462"
             });
            var json = Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
             Console.WriteLine(json);
