@@ -71,6 +71,10 @@ public class BoxInvocable : BaseInvocable
                 delay = TimeSpan.FromMilliseconds(Math.Min(delay.TotalMilliseconds * 2, MaxDelay.TotalMilliseconds));
                 continue;
             }
+            catch (Exception ex)
+            {
+                throw new PluginApplicationException(ex.Message);
+            }
         }
     }
 
