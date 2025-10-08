@@ -69,31 +69,56 @@ public class FolderActions(InvocationContext invocationContext, IFileManagementC
         return new CollaborationDto(collaboration);
     }
 
-    [Action("Search folders", Description = "List folders in a parent folder (non-recursive)")]
+    [Action("Search folders", Description = "List folders in a parent folder")]
     public async Task<SearchFoldersResponse> SearchFoldersInFolder([ActionParameter] SearchFilesRequest input)
     {
-        var items = await ExecuteWithErrorHandlingAsync(async () =>
-            await Client.FoldersManager.GetFolderItemsAsync(
-                input.FolderId ?? "0",
-                input.Limit ?? 200,
-                0,
-                sort: BoxSortBy.Name.ToString(),
-                direction: BoxSortDirection.DESC,
-                fields: new[] { "id", "type", "name", "path_collection", "created_by", "modified_by" }
-            )
-        );
-        if (!items.Entries.Any(i => i.Type == "folder"))
+        var result = new List<BasicFolderDto>();
+
+        async Task<List<BasicFolderDto>> GetFolders(string folderId, int offset = 0, int limit = 200)
         {
-            return new SearchFoldersResponse { Folders = new List<BoxItem>() };
+            var folders = new List<BasicFolderDto>();
+
+            var items = await ExecuteWithErrorHandlingAsync(async () =>
+                await Client.FoldersManager.GetFolderItemsAsync(
+                    folderId,
+                    limit,
+                    offset,
+                    sort: BoxSortBy.Name.ToString(),
+                    direction: BoxSortDirection.DESC,
+                    fields: new[] { "id", "type", "name", "created_by", "modified_by" }
+                )
+            );
+
+            var foundFolders = items.Entries
+                .Where(i => i.Type == "folder")
+                .Select(i => new BasicFolderDto(i))
+                .ToList();
+
+            folders.AddRange(foundFolders);
+
+            if (input.SearchSubFodlers == true)
+            {
+                foreach (var folder in foundFolders)
+                {
+                    var subFolders = await GetFolders(folder.FolderId, 0, limit);
+                    folders.AddRange(subFolders);
+                }
+            }
+
+            if (items.TotalCount > offset + limit)
+            {
+                var moreFolders = await GetFolders(folderId, offset + limit, limit);
+                folders.AddRange(moreFolders);
+            }
+
+            return folders;
         }
 
-        var folderItems = items.Entries
-            .Where(i => i.Type == "folder")
-            .ToList();
+        result.AddRange(await GetFolders(input.FolderId ?? "0", 0, input.Limit ?? 200));
 
         return new SearchFoldersResponse
         {
-            Folders = folderItems
+            Folders = result
         };
     }
 }

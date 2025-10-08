@@ -26,16 +26,21 @@ Before you can connect you need to make sure that:
 
 ## Actions
 
+### Files
 - **Search files in folder**: Retrieve a list of files from a specified directory. This action helps you to see all the contents within a folder.
-- **Get file information**: Obtain detailed information about a specific file, including its name and other metadata.
-- **Rename file**: Change the name of an existing file to something new.
-- **Download file**: Download a file from the directory, allowing you to save it locally or use it as needed.
-- **Upload file**: Upload a new file to a specified directory, making it accessible in your cloud storage.
-- **Copy file**: Copy a file to a different directory.
-- **Delete file**: Remove a file from the directory permanently.
-- **Create folder**: Create a new folder within a specified parent directory, helping you organize your files better.
-- **Delete folder**: Remove a folder and its contents from the directory permanently.
-- **Add collaborator to folder**: Invite someone to collaborate on a folder by adding them as a collaborator, allowing them to access and manage the contents of the folder.
+- **Get file information** Obtain detailed information about a specific file, including its name and other metadata.
+- **Rename file** Change the name of an existing file to something new.
+- **Download file** Download a file from the directory, allowing you to save it locally or use it as needed.
+- **Upload file** Upload a new file to a specified directory, making it accessible in your cloud storage.
+- **Copy file** Copy a file to a different directory.
+- **Move file** Move file to a different parent folder.
+- **Delete file** Remove a file from the directory permanently.
+
+### Folders
+- **Search folders** List folders in a parent folder.
+- **Create folder** Create a new folder within a specified parent directory, helping you organize your files better.
+- **Delete folder** Remove a folder and its contents from the directory permanently.
+- **Add collaborator to folder** Invite someone to collaborate on a folder by adding them as a collaborator, allowing them to access and manage the contents of the folder.
 
 ## Events
 

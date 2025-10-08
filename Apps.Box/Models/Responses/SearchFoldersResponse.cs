@@ -1,9 +1,9 @@
-﻿using Box.V2.Models;
+﻿using Apps.Box.Dtos;
 
 namespace Apps.Box.Models.Responses;
 
 public class SearchFoldersResponse
 {
 
-    public IEnumerable<BoxItem> Folders { get; set; }
+    public IEnumerable<BasicFolderDto> Folders { get; set; }
 }
