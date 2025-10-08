@@ -1,5 +1,6 @@
 ﻿using Apps.Box.Dtos;
 using Apps.Box.Models.Requests;
+using Apps.Box.Models.Responses;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -66,5 +67,33 @@ public class FolderActions(InvocationContext invocationContext, IFileManagementC
             await Client.CollaborationsManager.AddCollaborationAsync(addCollaboratorRequest,
                 notify: input.NotifyCollaborator));
         return new CollaborationDto(collaboration);
+    }
+
+    [Action("Search folders", Description = "List folders in a parent folder (non-recursive)")]
+    public async Task<SearchFoldersResponse> SearchFoldersInFolder([ActionParameter] SearchFilesRequest input)
+    {
+        var items = await ExecuteWithErrorHandlingAsync(async () =>
+            await Client.FoldersManager.GetFolderItemsAsync(
+                input.FolderId ?? "0",
+                input.Limit ?? 200,
+                0,
+                sort: BoxSortBy.Name.ToString(),
+                direction: BoxSortDirection.DESC,
+                fields: new[] { "id", "type", "name", "path_collection", "created_by", "modified_by" }
+            )
+        );
+        if (!items.Entries.Any(i => i.Type == "folder"))
+        {
+            return new SearchFoldersResponse { Folders = new List<BoxItem>() };
+        }
+
+        var folderItems = items.Entries
+            .Where(i => i.Type == "folder")
+            .ToList();
+
+        return new SearchFoldersResponse
+        {
+            Folders = folderItems
+        };
     }
 }
