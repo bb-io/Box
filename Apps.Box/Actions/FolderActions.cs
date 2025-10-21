@@ -74,7 +74,7 @@ public class FolderActions(InvocationContext invocationContext, IFileManagementC
     {
         var result = new List<BasicFolderDto>();
 
-        async Task<List<BasicFolderDto>> GetFolders(string folderId, int offset = 0, int limit = 200)
+        async Task<List<BasicFolderDto>> GetFolders(string folderId, int offset = 0, int limit = 200, int currentDepth = 0)
         {
             var folders = new List<BasicFolderDto>();
 
