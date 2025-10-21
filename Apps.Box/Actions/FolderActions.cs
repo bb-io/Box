@@ -85,7 +85,7 @@ public class FolderActions(InvocationContext invocationContext, IFileManagementC
                     offset,
                     sort: BoxSortBy.Name.ToString(),
                     direction: BoxSortDirection.DESC,
-                    fields: new[] { "id", "type", "name", "created_by", "modified_by" }
+                    fields: new[] { "id", "type", "name", "created_by", "modified_by", "path_collection" }
                 )
             );
 
@@ -96,11 +96,11 @@ public class FolderActions(InvocationContext invocationContext, IFileManagementC
 
             folders.AddRange(foundFolders);
 
-            if (input.SearchSubFodlers == true)
+            if (input.SearchSubFodlers == true && (!input.MaxDepthLevel.HasValue || currentDepth < input.MaxDepthLevel.Value))
             {
                 foreach (var folder in foundFolders)
                 {
-                    var subFolders = await GetFolders(folder.FolderId, 0, limit);
+                    var subFolders = await GetFolders(folder.FolderId, 0, limit, currentDepth + 1);
                     folders.AddRange(subFolders);
                 }
             }
@@ -113,8 +113,7 @@ public class FolderActions(InvocationContext invocationContext, IFileManagementC
 
             return folders;
         }
-
-        result.AddRange(await GetFolders(input.FolderId ?? "0", 0, input.Limit ?? 200));
+        result.AddRange(await GetFolders(input.FolderId ?? "0", 0, input.Limit ?? 200, 0));
 
         return new SearchFoldersResponse
         {
