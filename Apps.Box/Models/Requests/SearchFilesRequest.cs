@@ -15,4 +15,7 @@ public class SearchFilesRequest
 
     [Display("Include subfolders?", Description = "If set to true, it will recursively search through all folders")]
     public bool? SearchSubFodlers { get; set; }
+
+    [Display("Max depth level", Description = "How many levels deep to search under the parent folder when including subfolders. For example, 1 = only direct children, 2 = children + grandchildren. Ignored if 'Include subfolders?' is false.")]
+    public int? MaxDepthLevel { get; set; }
 }

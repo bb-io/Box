@@ -11,6 +11,14 @@ public class BasicFolderDto
         FolderName = folder.Name;
         CreatedBy = folder.CreatedBy?.Name;
         ModifiedBy = folder.ModifiedBy?.Name;
+        var entries = folder.PathCollection?.Entries?
+           .Select(e => e.Name)
+           .Where(n => !string.IsNullOrWhiteSpace(n))
+           .ToList() ?? new List<string>();
+
+        entries.Add(folder.Name);
+
+        Path = "/" + string.Join("/", entries);
     }
 
     [Display("Folder ID")]
@@ -24,4 +32,7 @@ public class BasicFolderDto
 
     [Display("Modified by")]
     public string? ModifiedBy { get; set; }
+
+    [Display("Path")]
+    public string Path { get; set; }
 }
