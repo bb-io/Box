@@ -11,7 +11,7 @@ public class MoveFileRequest
     [Display("File")]
     public string FileId { get; set; }
 
-    [DataSource(typeof(FolderDataSourceHandler))]
+    [FileDataSource(typeof(FolderPickerDataSourceHandler))]
     [Display("New parent folder ID")]
     public string FolderId { get; set; }
 }

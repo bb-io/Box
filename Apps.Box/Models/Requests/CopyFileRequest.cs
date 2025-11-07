@@ -15,7 +15,7 @@ namespace Apps.Box.Models.Requests
         public string FileId { get; set; }
 
 
-        [DataSource(typeof(FolderDataSourceHandler))]
+        [FileDataSource(typeof(FolderPickerDataSourceHandler))]
         [Display("New parent folder ID")]
         public string ParentFolderId { get; set; }
 
