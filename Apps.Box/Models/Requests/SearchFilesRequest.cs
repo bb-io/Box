@@ -1,12 +1,13 @@
 ﻿using Apps.Box.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Models.FileDataSourceItems;
 
 namespace Apps.Box.Models.Requests;
 
 public class SearchFilesRequest
 {
-    [DataSource(typeof(FolderDataSourceHandler))]
+    [FileDataSource(typeof(FolderPickerDataSourceHandler))]
     [Display("Parent folder ID", Description = "If not set, it will use the root level folder")]
     public string? FolderId { get; set; }
 
