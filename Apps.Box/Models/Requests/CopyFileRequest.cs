@@ -1,11 +1,7 @@
 ﻿using Apps.Box.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Models.FileDataSourceItems;
 
 namespace Apps.Box.Models.Requests
 {
@@ -14,7 +10,7 @@ namespace Apps.Box.Models.Requests
         [Display("New name")]
         public string? NewName { get; set; }
 
-        [DataSource(typeof(FileDataSourceHandler))]
+        [FileDataSource(typeof(FilePickerDataSourceHandler))]
         [Display("File ID")]
         public string FileId { get; set; }
 
