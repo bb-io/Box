@@ -25,7 +25,9 @@ public class OAuth2TokenService(InvocationContext invocationContext)
 
         var difference = expireDate - DateTime.UtcNow;
 
-        return (int)difference.TotalMinutes - 5;
+        // Token is refreshed every 60 days, we'll refresh it 1 day before it expires,
+        // so we return the difference in minutes minus 1440 (1 day)
+        return (int)difference.TotalMinutes - 1440;
     }
 
     public async Task<Dictionary<string, string>> RefreshToken(Dictionary<string, string> values, 
