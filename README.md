@@ -46,7 +46,7 @@ Before you can connect you need to make sure that:
 
 This section provides event triggers that notify you when certain actions occur within your file and directory management system. These triggers work on a polling mechanism, meaning they periodically check for updates rather than providing immediate notifications.
 
-- **On files created or updated**: This event triggers when any file is created or updated within your directories. It helps you stay informed about changes and new additions to your files.
+- **On files created or updated**: This event triggers when any file is created or updated within your directories. It helps you stay informed about changes and new additions to your files. There is a limit of 250 files and a recursion depth of 3.
 - **On files deleted**: This event triggers when any file is deleted from your directories. It ensures you are aware of any removed files, helping you keep track of your content.
 
 You can configure the polling interval for these events, choosing how frequently you want the system to check for updates. The interval can range from 5 minutes to 7 days, depending on your preferences and needs.

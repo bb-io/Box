@@ -11,6 +11,7 @@ namespace Apps.Box.Events.Polling;
 [PollingEventList]
 public class PollingList : BoxInvocable
 {
+    private const int MaxFillInFilesRequests = 3;
     private readonly BlackbirdBoxClient _client;
 
     public PollingList(InvocationContext invocationContext) : base(invocationContext)
@@ -50,7 +51,7 @@ public class PollingList : BoxInvocable
                     LastInteractionDate = DateTimeOffset.UtcNow
                 }
             };
-        
+
         changedItems = changedItems
             .Where(x => parentFolder.FolderId == null || x.PathCollection?.Entries.Any(e => e.Id == parentFolder.FolderId) == true)
             .ToArray();
@@ -120,14 +121,18 @@ public class PollingList : BoxInvocable
                : startFolderId.Trim();
 
         var files = new List<BoxItem>();
-        await FillInFiles(files, rootId);
+        await FillInFiles(files, rootId, 0);
         return files;
     }
 
-    private async Task FillInFiles(ICollection<BoxItem> files, string folderId , string folderPath = "")
+    private async Task FillInFiles(ICollection<BoxItem> files, string folderId, int requestQuota)
     {
+        if (requestQuota >= MaxFillInFilesRequests)
+            return;
+
+        requestQuota++;
         var items = await ExecuteWithErrorHandlingAsync(() =>
-        Client.FoldersManager.GetFolderItemsAsync(folderId, 1000, autoPaginate: true,
+        Client.FoldersManager.GetFolderItemsAsync(folderId, 250, autoPaginate: false,
             fields: new[] { "name", "path_collection", "size", "description", "created_at", "modified_at" }));
 
         foreach (var item in items.Entries)
@@ -136,10 +141,7 @@ public class PollingList : BoxInvocable
                 files.Add(item);
 
             if (item.Type == "folder")
-            {
-                var subfolderPath = string.IsNullOrEmpty(folderPath) ? item.Name : folderPath + "/" + item.Name;
-                await FillInFiles(files, item.Id, subfolderPath);
-            }
+                await FillInFiles(files, item.Id, requestQuota);
         }
     }
 }
