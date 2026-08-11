@@ -87,7 +87,7 @@ public class PollingList : BoxInvocable
             };
         }
 
-        var trashedFiles = await _client.FoldersManager.GetTrashItemsAsync(limit: 1000, autoPaginate: true,
+        var trashedFiles = await _client.FoldersManager.GetTrashItemsAsync(limit: 250, autoPaginate: false,
             fields: ["trashed_at", "name", "path_collection", "size", "description"]);
         var changedItems = trashedFiles.Entries.Where(x => x.TrashedAt > request.Memory.LastInteractionDate).ToArray();
 
@@ -135,13 +135,13 @@ public class PollingList : BoxInvocable
         Client.FoldersManager.GetFolderItemsAsync(folderId, 250, autoPaginate: false,
             fields: new[] { "name", "path_collection", "size", "description", "created_at", "modified_at" }));
 
-        foreach (var item in items.Entries)
-        {
-            if (item.Type == "file")
-                files.Add(item);
+        //foreach (var item in items.Entries)
+        //{
+        //    if (item.Type == "file")
+        //        files.Add(item);
 
-            if (item.Type == "folder")
-                await FillInFiles(files, item.Id, requestQuota);
-        }
+        //    if (item.Type == "folder")
+        //        await FillInFiles(files, item.Id, requestQuota);
+        //}
     }
 }
