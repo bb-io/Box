@@ -44,12 +44,13 @@ Before you can connect you need to make sure that:
 
 ## Events
 
-This section provides event triggers that notify you when certain actions occur in Box. These triggers are delivered by Box webhooks, meaning your bird flies immediately after the change happens instead of waiting for the next check.
-
 ### Files
-- **On file created**: This event triggers when a file is uploaded to the folder you selected, or to any of its subfolders. It returns the file ID together with the name, path, size and author of the uploaded file. Optionally set _Parent folder ID_ to narrow the event down to files that are placed directly in that folder.
 
-Every event requires a folder to monitor. Box does not allow monitoring the root folder ("All files"), so pick a specific folder instead. Blackbird registers the webhook in Box when you publish the bird and removes it again when the bird is deleted, so no manual setup is needed in Box.
+- **On file created**: This event triggers when a file is uploaded to the folder you selected, or to any of its subfolders. It returns the file ID together with the name, path, size and author of the uploaded file.
+
+Every event requires a folder to monitor. Box does not allow monitoring the root folder ("All files"), so pick a specific folder instead.
+
+> **Note**: removing a subscription from Box takes a few moments. If you suspend a bird and activate it again straight away, activation can fail because the previous subscription still exists in Box. Wait at least 30-60 seconds between suspending and reactivating a bird.
 
 ## Example
 
