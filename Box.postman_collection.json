@@ -1,0 +1,403 @@
+{
+  "info": {
+    "_postman_id": "fffaf464-9b9c-44a3-8612-b8c70d8df4d1",
+    "name": "Box",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "32828266"
+  },
+  "item": [
+    {
+      "name": "webhooks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.box.com/2.0/webhooks",
+          "protocol": "https",
+          "host": [
+            "api",
+            "box",
+            "com"
+          ],
+          "path": [
+            "2.0",
+            "webhooks"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "webhooks",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.box.com/2.0/webhooks",
+              "protocol": "https",
+              "host": [
+                "api",
+                "box",
+                "com"
+              ],
+              "path": [
+                "2.0",
+                "webhooks"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "date",
+              "value": "Tue, 18 Aug 2026 09:46:23 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "x-envoy-upstream-service-time",
+              "value": "97"
+            },
+            {
+              "key": "box-request-id",
+              "value": "0caea0aa1a7011658d1aa0d254b71b505"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000"
+            },
+            {
+              "key": "via",
+              "value": "1.1 google"
+            },
+            {
+              "key": "Alt-Svc",
+              "value": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"entries\": [\n        {\n            \"id\": \"8164607003\",\n            \"type\": \"webhook\",\n            \"target\": {\n                \"id\": \"409928906065\",\n                \"type\": \"folder\"\n            }\n        }\n    ],\n    \"limit\": 100\n}"
+        }
+      ]
+    },
+    {
+      "name": "webhook",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.box.com/2.0/webhooks",
+          "protocol": "https",
+          "host": [
+            "api",
+            "box",
+            "com"
+          ],
+          "path": [
+            "2.0",
+            "webhooks"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "webhook",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.box.com/2.0/webhooks/8164607003",
+              "protocol": "https",
+              "host": [
+                "api",
+                "box",
+                "com"
+              ],
+              "path": [
+                "2.0",
+                "webhooks",
+                "8164607003"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "date",
+              "value": "Tue, 18 Aug 2026 09:50:37 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "x-envoy-upstream-service-time",
+              "value": "63"
+            },
+            {
+              "key": "box-request-id",
+              "value": "0d50579305225c1ff93c8440b856d2b6b"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000"
+            },
+            {
+              "key": "via",
+              "value": "1.1 google"
+            },
+            {
+              "key": "Alt-Svc",
+              "value": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": \"8164607003\",\n    \"type\": \"webhook\",\n    \"target\": {\n        \"id\": \"409928906065\",\n        \"type\": \"folder\"\n    },\n    \"created_by\": {\n        \"type\": \"user\",\n        \"id\": \"52382378287\",\n        \"name\": \"Vitalii Bezuhlyi\",\n        \"login\": \"vitalii.bezuhlyi@blackbird.io\"\n    },\n    \"created_at\": \"2026-08-18T02:44:42-07:00\",\n    \"address\": \"https://webhook.site/26521994-fdb1-4840-8bd1-539d92f60ef6\",\n    \"triggers\": [\n        \"FILE.UPLOADED\"\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "webhooks",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"target\": {\r\n    \"id\": \"409928906065\",\r\n    \"type\": \"folder\"\r\n  },\r\n  \"address\": \"https://webhook.site/26521994-fdb1-4840-8bd1-539d92f60ef6\",\r\n  \"triggers\": [\"FILE.UPLOADED\"]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.box.com/2.0/webhooks",
+          "protocol": "https",
+          "host": [
+            "api",
+            "box",
+            "com"
+          ],
+          "path": [
+            "2.0",
+            "webhooks"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "webhooks",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"target\": {\r\n    \"id\": \"409928906065\",\r\n    \"type\": \"folder\"\r\n  },\r\n  \"address\": \"https://webhook.site/26521994-fdb1-4840-8bd1-539d92f60ef6\",\r\n  \"triggers\": [\"FILE.UPLOADED\"]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.box.com/2.0/webhooks",
+              "protocol": "https",
+              "host": [
+                "api",
+                "box",
+                "com"
+              ],
+              "path": [
+                "2.0",
+                "webhooks"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "date",
+              "value": "Tue, 18 Aug 2026 09:44:42 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "x-envoy-upstream-service-time",
+              "value": "222"
+            },
+            {
+              "key": "box-request-id",
+              "value": "017c6f7bc4553ac1a221299931419125c"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000"
+            },
+            {
+              "key": "via",
+              "value": "1.1 google"
+            },
+            {
+              "key": "Alt-Svc",
+              "value": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": \"8164607003\",\n    \"type\": \"webhook\",\n    \"target\": {\n        \"id\": \"409928906065\",\n        \"type\": \"folder\"\n    },\n    \"created_by\": {\n        \"type\": \"user\",\n        \"id\": \"52382378287\",\n        \"name\": \"Vitalii Bezuhlyi\",\n        \"login\": \"vitalii.bezuhlyi@blackbird.io\"\n    },\n    \"created_at\": \"2026-08-18T02:44:42-07:00\",\n    \"address\": \"https://webhook.site/26521994-fdb1-4840-8bd1-539d92f60ef6\",\n    \"triggers\": [\n        \"FILE.UPLOADED\"\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "webhooks",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://api.box.com/2.0/webhooks/8164607003",
+          "protocol": "https",
+          "host": [
+            "api",
+            "box",
+            "com"
+          ],
+          "path": [
+            "2.0",
+            "webhooks",
+            "8164607003"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "webhooks",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://api.box.com/2.0/webhooks/8164607003",
+              "protocol": "https",
+              "host": [
+                "api",
+                "box",
+                "com"
+              ],
+              "path": [
+                "2.0",
+                "webhooks",
+                "8164607003"
+              ]
+            }
+          },
+          "status": "No Content",
+          "code": 204,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "date",
+              "value": "Tue, 18 Aug 2026 09:51:29 GMT"
+            },
+            {
+              "key": "x-envoy-upstream-service-time",
+              "value": "110"
+            },
+            {
+              "key": "box-request-id",
+              "value": "1e3bcabf068408dce77cb1079d0b0355d"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000"
+            },
+            {
+              "key": "via",
+              "value": "1.1 google"
+            },
+            {
+              "key": "Alt-Svc",
+              "value": "h3=\":443\"; ma=2592000"
+            }
+          ],
+          "cookie": [],
+          "body": null
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "access_token",
+      "value": ""
+    }
+  ]
+}

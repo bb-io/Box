@@ -44,12 +44,12 @@ Before you can connect you need to make sure that:
 
 ## Events
 
-This section provides event triggers that notify you when certain actions occur within your file and directory management system. These triggers work on a polling mechanism, meaning they periodically check for updates rather than providing immediate notifications.
+This section provides event triggers that notify you when certain actions occur in Box. These triggers are delivered by Box webhooks, meaning your bird flies immediately after the change happens instead of waiting for the next check.
 
-- **On files created or updated**: This event triggers when any file is created or updated within your directories. It helps you stay informed about changes and new additions to your files. There is a limit of 250 files and a recursion depth of 3.
-- **On files deleted**: This event triggers when any file is deleted from your directories. It ensures you are aware of any removed files, helping you keep track of your content.
+### Files
+- **On file created**: This event triggers when a file is uploaded to the folder you selected, or to any of its subfolders. It returns the file ID together with the name, path, size and author of the uploaded file. Optionally set _Parent folder ID_ to narrow the event down to files that are placed directly in that folder.
 
-You can configure the polling interval for these events, choosing how frequently you want the system to check for updates. The interval can range from 5 minutes to 7 days, depending on your preferences and needs.
+Every event requires a folder to monitor. Box does not allow monitoring the root folder ("All files"), so pick a specific folder instead. Blackbird registers the webhook in Box when you publish the bird and removes it again when the bird is deleted, so no manual setup is needed in Box.
 
 ## Example
 
@@ -57,7 +57,7 @@ Here is an example of how you can use the Box app in a workflow:
 
 ![example](image/README/Example.png)
 
-In this example, the workflow starts with the **On files created or updated** event, which triggers when any file is created or updated in your directories. Then, the workflow uses the **Download file** action to download the file that was created or updated. In the next step we translate the file via `DeepL` and then upload the translated file back to the Box directory.
+In this example, the workflow starts with the **On file created** event, which triggers when a file is uploaded to the folder you monitor. Then, the workflow uses the **Download file** action to download the file that was uploaded. In the next step we translate the file via `DeepL` and then upload the translated file back to the Box directory.
 
 ## Feedback
 
