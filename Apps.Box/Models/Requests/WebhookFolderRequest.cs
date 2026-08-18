@@ -6,7 +6,7 @@ namespace Apps.Box.Models.Requests;
 
 public class WebhookFolderRequest
 {
-    [Display("Folder", Description = "Folder to monitor, including its subfolders")]
+    [Display("Parent folder ID", Description = "Folder to monitor, including its subfolders")]
     [FileDataSource(typeof(FolderPickerDataSourceHandler))]
     public string FolderId { get; set; } = string.Empty;
 }

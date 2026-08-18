@@ -16,8 +16,8 @@ public class FileEventResponse : IDownloadContentInput
         ParentFolderId = source.Parent?.Id ?? string.Empty;
         CreatedBy = source.CreatedBy?.Name;
         ModifiedBy = source.ModifiedBy?.Name;
-        CreatedAt = source.CreatedAt;
-        ModifiedAt = source.ModifiedAt;
+        CreatedAt = source.CreatedAt?.UtcDateTime;
+        ModifiedAt = source.ModifiedAt?.UtcDateTime;
     }
 
     [Display("File ID")]
@@ -45,10 +45,10 @@ public class FileEventResponse : IDownloadContentInput
     public string? ModifiedBy { get; set; }
 
     [Display("Created at")]
-    public DateTimeOffset? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
     [Display("Modified at")]
-    public DateTimeOffset? ModifiedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
 
     private static string BuildPath(BoxWebhookPathCollection? pathCollection)
     {
