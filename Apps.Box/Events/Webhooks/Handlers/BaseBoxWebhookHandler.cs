@@ -22,15 +22,33 @@ public abstract class BaseBoxWebhookHandler(
     public Task SubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProvider,
         Dictionary<string, string> values)
         => ExecuteWithErrorHandlingAsync(() =>
-            CreateWebhookAsync(CreateClient(authenticationCredentialsProvider), CreateSubscription(values)));
+            CreateOrUpdateWebhookAsync(CreateClient(authenticationCredentialsProvider), CreateSubscription(values)));
 
     public Task UnsubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProvider,
         Dictionary<string, string> values)
         => ExecuteWithErrorHandlingAsync(() =>
             DeleteWebhookAsync(CreateClient(authenticationCredentialsProvider), CreateSubscription(values)));
 
-    private static async Task CreateWebhookAsync(BlackbirdBoxClient client, BoxWebhookSubscription subscription)
+    private static async Task CreateOrUpdateWebhookAsync(BlackbirdBoxClient client,
+        BoxWebhookSubscription subscription)
     {
+        var existingWebhook = await FindWebhookByFolderAsync(client, subscription.FolderId);
+        if (existingWebhook is not null)
+        {
+            if (Matches(existingWebhook, subscription))
+                return;
+
+            var updateRequest = new BoxWebhookRequest
+            {
+                Id = existingWebhook.Id,
+                Address = subscription.CallbackUrl,
+                Triggers = subscription.Triggers.ToList()
+            };
+
+            await client.WebhooksManager.UpdateWebhookAsync(updateRequest);
+            return;
+        }
+
         var request = new BoxWebhookRequest
         {
             Target = new BoxRequestEntity
@@ -43,6 +61,25 @@ public abstract class BaseBoxWebhookHandler(
         };
 
         await client.WebhooksManager.CreateWebhookAsync(request);
+    }
+
+    private static async Task<BoxWebhook?> FindWebhookByFolderAsync(BlackbirdBoxClient client, string folderId)
+    {
+        string? marker = null;
+
+        do
+        {
+            var page = await client.WebhooksManager.GetWebhooksAsync(WebhooksPageSize, marker);
+            var entry = page.Entries.FirstOrDefault(webhook =>
+                webhook.Target?.Id == folderId && webhook.Target.Type == "folder");
+
+            if (entry is not null)
+                return await client.WebhooksManager.GetWebhookAsync(entry.Id);
+
+            marker = page.NextMarker;
+        } while (!string.IsNullOrEmpty(marker));
+
+        return null;
     }
 
     private static async Task DeleteWebhookAsync(BlackbirdBoxClient client, BoxWebhookSubscription subscription)
@@ -77,7 +114,9 @@ public abstract class BaseBoxWebhookHandler(
     }
 
     private static bool Matches(BoxWebhook webhook, BoxWebhookSubscription subscription)
-        => webhook.Address == subscription.CallbackUrl
+        => webhook.Target?.Id == subscription.FolderId
+           && webhook.Target.Type == "folder"
+           && webhook.Address == subscription.CallbackUrl
            && subscription.Triggers.All(trigger => webhook.Triggers.Contains(trigger));
 
     private BlackbirdBoxClient CreateClient(IEnumerable<AuthenticationCredentialsProvider> credentials)
